@@ -8,7 +8,7 @@ node16以上，安装pnpm。ts版本，打包要符合ts的编译。
 
 ```bash
 # 克隆项目
-git clone https://gitee.com/ailge/polymer-ui.git
+git clone https://github.com/malinge/polymer-ui.git
 
 # 进入项目
 cd polymer-ui

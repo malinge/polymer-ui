@@ -56,8 +56,8 @@
 			}
 
 			// 修改密码
-			updatePasswordApi(dataForm).then(() => {
-				ElMessage.success('修改成功')
+			updatePasswordApi(dataForm).then((res) => {
+        ElMessage.success(res?.data || '修改成功');
 			})
 		})
 	}

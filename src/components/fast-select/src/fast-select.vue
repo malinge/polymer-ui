@@ -1,6 +1,6 @@
 <template>
   <el-select
-      :model-value="modelValue"
+      :model-value="stringValue"
       :placeholder="placeholder"
       :clearable="clearable"
       @change="handleChange">
@@ -15,10 +15,12 @@
 </template>
 
 <script setup lang="ts" name="FastSelect">
+import { computed } from 'vue'
 import { getDictDataList } from '@/utils/tool'
 import { useAppStore } from '@/store/modules/app'
 
 const appStore = useAppStore()
+const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: {
     type: [Number, String],
@@ -40,14 +42,19 @@ const props = defineProps({
   }
 })
 
-// 添加处理函数，确保不会传递 undefined
+// 将传入的值转为字符串类型，确保与 dictValue 匹配
+const stringValue = computed(() => {
+  return props.modelValue !== undefined && props.modelValue !== null
+      ? String(props.modelValue)
+      : ''
+})
+
 const handleChange = (value: any) => {
-  // 当值为 undefined 时转换为空字符串
-  emit('update:modelValue', value === undefined ? '' : value)
+  emit('update:modelValue', value)
 }
 
-// 添加 emit 声明
-const emit = defineEmits(['update:modelValue'])
-
-const dataList = getDictDataList(appStore.dictList, props.dictType)
+// 改为 computed，确保字典数据异步加载后能响应式更新
+const dataList = computed(() => {
+  return getDictDataList(appStore.dictList, props.dictType)
+})
 </script>

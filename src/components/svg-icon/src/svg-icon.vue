@@ -30,7 +30,14 @@ const props = defineProps({
 })
 
 // https://www.iconfont.cn 图标库需使用前缀 icon- 才能匹配
-const iconName = computed(() => `#icon-${props.icon.replace('icon-', '')}`)
+const iconName = computed(() => {
+  if (!props.icon){
+    return '#icon-database' // 返回默认值，避免报错
+  }
+
+  const cleanIcon = props.icon.replace(/^icon-/, '')
+  return `#icon-${cleanIcon}`
+})
 </script>
 
 <style lang="scss" scoped>

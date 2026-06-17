@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus/es'
-import { useMailAccountApi, useMailAccountSubmitApi } from '@/api//message/mailAccount'
+import { useMailAccountApi, useMailAccountSubmitApi } from '@/api/message/mailAccount'
 
 const emit = defineEmits(['refreshDataList'])
 

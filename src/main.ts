@@ -19,6 +19,7 @@ import FastTableColumn from '@/components/fast-table-column'
 import FastRadioGroup from '@/components/fast-radio-group'
 import FastSelect from '@/components/fast-select'
 import FastUser from '@/components/fast-user'
+import CodeMirror from '@/components/code-mirror'
 import SvgIcon from '@/components/svg-icon'
 import VueDOMPurifyHTML from 'vue-dompurify-html' // 解决v-html 的安全隐患
 
@@ -42,6 +43,7 @@ app.use(FastRadioGroup)
 app.use(VueDOMPurifyHTML)
 app.use(FastSelect)
 app.use(FastUser)
+app.use(CodeMirror)
 app.use(SvgIcon)
 app.use(ElementPlus)
 app.use(VXETable)

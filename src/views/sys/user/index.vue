@@ -55,7 +55,7 @@
             </el-upload>
           </el-form-item>
           <el-form-item>
-            <el-button v-auth="'sys:user:export'" type="success" @click="downloadExcel()"
+            <el-button v-auth="'sys:user:export'" type="success" @click="exportHandle()"
               >导出</el-button
             >
           </el-form-item>
@@ -161,18 +161,18 @@
 
 <script setup lang="ts" name="SysUserIndex">
 import { useCrud } from "@/hooks";
-import { reactive, ref } from "vue";
+import { reactive, ref} from "vue";
 import AddOrUpdate from "./add-or-update.vue";
 import { IHooksOptions } from "@/hooks/interface";
 import { ElMessage, UploadProps } from "element-plus";
 import DeptTree from "./dept-tree.vue";
-import cache from "@/utils/cache";
 import constant from "@/utils/constant";
 const tableRef = ref();
 
 const state: IHooksOptions = reactive({
   dataListUrl: "/sys/user/page",
   deleteUrl: "/sys/user",
+  exportUrl:"/sys/user/export",
   primaryKey: "id",
   queryForm: {
     username: "",
@@ -193,13 +193,7 @@ const handleDeptClick = (deptId: number) => {
 };
 
 // 导入用户excel文件
-const uploadUserExcelUrl =
-  constant.apiUrl + "/sys/user/import?access_token=" + cache.getToken();
-
-const downloadExcel = () => {
-  // 调用导出方法
-  exportHandle('/sys/user/export');
-};
+const uploadUserExcelUrl = constant.apiUrl + "/sys/user/import";
 
 const handleSuccess: UploadProps["onSuccess"] = (res, file) => {
   if (res.code !== 0) {

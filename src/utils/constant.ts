@@ -13,9 +13,6 @@ export default {
 	// websocket地址
 	wsUrl: import.meta.env.VITE_WS_URL,
 
-	// 文件上传地址
-	uploadUrl: import.meta.env.VITE_API_URL + '/storage/storage/upload',
-
 	// 环境变量
 	env: {
 		MODE: import.meta.env.MODE,

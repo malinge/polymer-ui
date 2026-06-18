@@ -1,4 +1,3 @@
-import cache from '@/utils/cache'
 import service from '@/utils/request'
 
 export const useProjectApi = (id: number) => {
@@ -11,9 +10,4 @@ export const useProjectSubmitApi = (dataForm: any) => {
 	} else {
 		return service.post('/gen/project', dataForm)
 	}
-}
-
-// 源码下载
-export const useSourceDownloadApi = (id: string) => {
-	location.href = import.meta.env.VITE_API_URL + '/gen/project/download/' + id + '?access_token='+cache.getToken()
 }

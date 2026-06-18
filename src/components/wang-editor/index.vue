@@ -22,6 +22,8 @@ import constant from '@/utils/constant'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { IDomEditor, IEditorConfig } from '@wangeditor/editor'
 import cache from '@/utils/cache'
+import FileUrlUtils from "@/utils/fileUrlUtils";
+import {ElMessage} from "element-plus";
 
 const props = defineProps({
 	modelValue: {
@@ -57,14 +59,20 @@ const editorConfig: Partial<IEditorConfig> = {
 	readOnly: props.disabled,
 	MENU_CONF: {
 		uploadImage: {
-			server: constant.uploadUrl + '?access_token=' + cache.getToken(),
+			server: constant.apiUrl + '/storage/file/upload?access_token=' + cache.getToken(),
 			fieldName: 'file',
 			// 自定义插入图片
-			customInsert(res: any, insertFn: InsertFnType) {
-				// res 即服务端的返回结果
-				// 从 res 中找到 url alt href ，然后插图图片
-				insertFn(res.data.url, res.data.name, '')
-			}
+			async customInsert(res: any, insertFn: InsertFnType) {
+        // res 即服务端的返回结果
+        // 从 res 中找到 url alt href ，然后插图图片
+        try {
+          const url = await FileUrlUtils.getFullUrl(res.data.url);
+          insertFn(url, res.data.name, '');
+        } catch (error) {
+          console.error('获取图片URL失败：', error);
+          ElMessage.error('图片上传失败，请重试');
+        }
+      }
 		}
 	}
 }

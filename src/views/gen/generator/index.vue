@@ -60,13 +60,14 @@ import Preview from './preview.vue'
 import Generator from './generator.vue'
 import { useTableSyncApi } from '@/api/gen/table'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { useDownloadApi } from '@/api/gen/generator'
 
 const state: IHooksOptions = reactive({
 	dataListUrl: '/gen/table/page',
 	deleteUrl: '/gen/table',
+  exportUrl: '/gen/generator/download',
 	queryForm: {
-		tableName: ''
+		tableName: '',
+    tableIds: ''
 	}
 })
 
@@ -97,7 +98,11 @@ const downloadBatchHandle = () => {
 		return
 	}
 
-	useDownloadApi(tableIds)
+  // 将选中的 tableIds 赋值给 queryForm
+  state.queryForm.tableIds = tableIds.join(',')
+
+  //
+  exportHandle();
 }
 
 const syncHandle = (row: any) => {
@@ -114,5 +119,5 @@ const syncHandle = (row: any) => {
 		.catch(() => {})
 }
 
-const { getDataList, selectionChangeHandle, sizeChangeHandle, currentChangeHandle, deleteBatchHandle } = useCrud(state)
+const { getDataList, selectionChangeHandle, sizeChangeHandle, currentChangeHandle, deleteBatchHandle, exportHandle } = useCrud(state)
 </script>

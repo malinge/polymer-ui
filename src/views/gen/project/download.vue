@@ -65,7 +65,13 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { useProjectApi, useProjectSubmitApi, useSourceDownloadApi } from '@/api/gen/project'
+import { useProjectApi, useProjectSubmitApi } from '@/api/gen/project'
+import {IHooksOptions} from "@/hooks/interface";
+import {useCrud} from "@/hooks";
+
+const state: IHooksOptions = reactive({
+  exportUrl: '/gen/project/download/'
+})
 
 const visible = ref(false)
 const dataFormRef = ref()
@@ -122,7 +128,17 @@ const submitHandle = () => {
 		await useProjectSubmitApi(dataForm)
 
 		// 源码下载
-		useSourceDownloadApi(dataForm.id)
+    // 保存原始 URL
+    const originalUrl = state.exportUrl;
+    // 临时修改为完整路径
+    state.exportUrl = `${state.exportUrl}${dataForm.id}`;
+    try {
+      await exportHandle();
+    } finally {
+      // 恢复原始 URL
+      state.exportUrl = originalUrl;
+    }
+
 		visible.value = false
 	})
 }
@@ -130,4 +146,5 @@ const submitHandle = () => {
 defineExpose({
 	init
 })
+const {exportHandle } = useCrud(state)
 </script>

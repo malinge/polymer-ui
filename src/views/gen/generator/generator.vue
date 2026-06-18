@@ -100,8 +100,17 @@
 import { reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus/es'
 import { useBaseClassListApi } from '@/api/gen/baseClass'
-import { useGeneratorApi, useDownloadApi } from '@/api/gen/generator'
+import { useGeneratorApi } from '@/api/gen/generator'
 import { useTableApi, useTableSubmitApi } from '@/api/gen/table'
+import {IHooksOptions} from "@/hooks/interface";
+import {useCrud} from "@/hooks";
+
+const state: IHooksOptions = reactive({
+  exportUrl: '/gen/generator/download',
+  queryForm: {
+    tableIds: ''
+  }
+})
 
 const emit = defineEmits(['refreshDataList'])
 
@@ -197,9 +206,12 @@ const generatorHandle = () => {
 
 		// 生成代码，zip压缩包
 		if (dataForm.generatorType === 0) {
-			useDownloadApi([dataForm.id])
-			visible.value = false
-			return
+      // 将选中的 dataForm.id 赋值给 queryForm
+      state.queryForm.tableIds = dataForm.id
+      //
+      await exportHandle();
+      visible.value = false
+      return
 		}
 
 		// 生成代码，自定义路径
@@ -219,6 +231,8 @@ const generatorHandle = () => {
 defineExpose({
 	init
 })
+
+const {exportHandle } = useCrud(state)
 </script>
 
 <style lang="scss" scoped>

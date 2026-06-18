@@ -230,101 +230,192 @@ export const useCrud = (options: IHooksOptions, tableRef?: any) => {
 
 	const downloadHandle = async (url: string, filename?: string, method: string = 'GET'): Promise<any> => {
 		try {
-
-			url = await FileUrlUtils.getFullUrl(url)
+			const fullUrl = await FileUrlUtils.getFullUrl(url)
 
 			const res = await service({
 				responseType: 'blob',
-				url: url,
+				url: fullUrl,
 				method: method
 			})
-			// 创建a标签
-			const down = document.createElement('a')
-			// 文件名没传，则使用时间戳
-			if (filename) {
-				down.download = filename
-			} else {
-				const downName = res.headers['content-disposition'].split(';')[1].split('=')[1]
-				down.download = decodeURI(downName)
+
+			// 检查是否为错误响应
+			const isError = await checkErrorResponse(res)
+			if (isError) {
+				return
 			}
 
-			// 隐藏a标签
-			down.style.display = 'none'
+			// 获取文件名
+			const fileName = getFileNameFromResponse(res, filename)
 
-			// 创建下载url
-			down.href = URL.createObjectURL(
-				new Blob([res.data], {
-					type: res.data.type
-				})
-			)
+			// 触发下载
+			triggerDownload(res.data, fileName)
 
-			// 模拟点击下载
-			document.body.appendChild(down)
-			down.click()
-
-			// 释放URL
-			URL.revokeObjectURL(down.href)
-			// 下载完成移除
-			document.body.removeChild(down)
+			ElMessage.success('下载成功')
 		} catch (err: any) {
-			ElMessage.error(err.message)
+			await handleDownloadError(err)
 		}
 	}
 
-	const exportHandle = async (url: string, filename?: string): Promise<void> => {
-		if (!url) {
-			ElMessage.error('导出接口地址未配置');
-			return;
-		}
-
-		// 1. 获取基础查询参数（从 state.queryForm）
-		const baseParams = { ...state.queryForm };
-
-		// 2. 序列化参数（与 getDataList 一致）
-		let fullUrl = url;
-		if (Object.keys(baseParams).length) {
-			const queryString = qs.stringify(baseParams, { addQueryPrefix: true });
-			fullUrl = url + queryString;
+	const exportHandle = async (filename?: string): Promise<void> => {
+		if (!state.exportUrl) {
+			ElMessage.error('导出接口地址未配置')
+			return
 		}
 
 		try {
+			// 合并参数
+			const baseParams = { ...state.queryForm }
+
+			// 过滤空值
+			const filteredParams = Object.keys(baseParams).reduce<Record<string, any>>((acc, key) => {
+				const value = baseParams[key]
+				if (value !== undefined && value !== null && value !== '') {
+					acc[key] = value
+				}
+				return acc
+			}, {})
+
+			// 构建完整 URL
+			const queryString = Object.keys(filteredParams).length
+				? qs.stringify(filteredParams, { addQueryPrefix: true })
+				: ''
+			const fullUrl = state.exportUrl + queryString
+
+			// 发起导出请求
 			const res = await service({
 				responseType: 'blob',
 				url: fullUrl,
 				method: 'GET'
-			});
+			})
 
-			// 创建下载链接
-			const down = document.createElement('a');
-			if (filename) {
-				down.download = filename;
-			} else {
-				const downName = res.headers['content-disposition'].split(';')[1].split('=')[1]
-				down.download = decodeURI(downName)
+			// 检查是否为错误响应
+			const isError = await checkErrorResponse(res)
+			if (isError) {
+				return
 			}
 
-			// 隐藏a标签
-			down.style.display = 'none'
+			// 获取文件名
+			const fileName = getFileNameFromResponse(res, filename)
 
-			// 创建下载url
-			down.href = URL.createObjectURL(
-				new Blob([res.data], {
-					type: res.data.type
-				})
-			)
+			// 触发下载
+			triggerDownload(res.data, fileName)
 
-			// 模拟点击下载
-			document.body.appendChild(down)
-			down.click()
-
-			// 释放URL
-			URL.revokeObjectURL(down.href)
-			// 下载完成移除
-			document.body.removeChild(down)
+			ElMessage.success('导出成功')
 		} catch (err: any) {
-			ElMessage.error(err.message || '导出失败');
+			await handleDownloadError(err)
 		}
-	};
+	}
+
+	/**
+	 * 从响应中提取文件名
+	 */
+	const getFileNameFromResponse = (res: any, fallbackName?: string): string => {
+		if (fallbackName) {
+			return fallbackName
+		}
+
+		const contentDisposition = res.headers['content-disposition']
+		if (contentDisposition) {
+			// 优先匹配 filename* (支持 UTF-8 编码)
+			const matchStar = contentDisposition.match(/filename\*?=(?:UTF-8'')?([^;]+)/i)
+			if (matchStar) {
+				return decodeURIComponent(matchStar[1])
+			}
+			// 匹配普通 filename
+			const match = contentDisposition.match(/filename=([^;]+)/i)
+			if (match) {
+				return decodeURIComponent(match[1])
+			}
+		}
+
+		// 使用默认文件名
+		const ext = 'xlsx'
+		return `文件_${new Date().getTime()}.${ext}`
+	}
+
+	/**
+	 * 检查响应是否为错误响应
+	 */
+	const checkErrorResponse = async (res: any): Promise<boolean> => {
+		const contentType = res.headers['content-type'] || ''
+
+		// 检查是否为 JSON 错误响应
+		if (contentType.includes('application/json')) {
+			try {
+				const text = await res.data.text()
+				try {
+					const errorData = JSON.parse(text)
+					ElMessage.error(errorData.msg || errorData.message || '操作失败')
+				} catch {
+					ElMessage.error('操作失败：' + text.substring(0, 100))
+				}
+			} catch {
+				ElMessage.error('操作失败：无法读取响应数据')
+			}
+			return true
+		}
+		// 检查文件是否为空
+		if (!res.data || res.data.size === 0) {
+			ElMessage.error('导出文件为空，请检查查询条件')
+			return true
+		}
+
+		return false
+	}
+
+	/**
+	 * 创建并触发下载
+	 */
+	const triggerDownload = (data: any, fileName: string, fileType?: string) => {
+		const link = document.createElement('a')
+		link.style.display = 'none'
+		link.download = fileName
+
+		const blob = new Blob([data], {
+			type: data.type || fileType || 'application/octet-stream'
+		})
+		link.href = URL.createObjectURL(blob)
+
+		document.body.appendChild(link)
+		link.click()
+
+		// 延迟清理资源
+		setTimeout(() => {
+			URL.revokeObjectURL(link.href)
+			document.body.removeChild(link)
+		}, 100)
+	}
+
+	/**
+	 * 统一的错误处理
+	 */
+	const handleDownloadError = async (err: any): Promise<void> => {
+		// 处理 HTTP 错误响应
+		if (err.response) {
+			const { status, data } = err.response
+
+			// 如果是 blob，尝试读取错误信息
+			if (data instanceof Blob) {
+				try {
+					const text = await data.text()
+					try {
+						const errorData = JSON.parse(text)
+						ElMessage.error(errorData.msg || errorData.message || `请求失败 (HTTP ${status})`)
+					} catch {
+						ElMessage.error(`请求失败：${text.substring(0, 100)}`)
+					}
+				} catch {
+					ElMessage.error(`请求失败 (HTTP ${status})`)
+				}
+			} else {
+				ElMessage.error(err.response.data?.msg || err.response.data?.message || err.message || '请求失败')
+			}
+		} else if (err.request) {
+			ElMessage.error('网络异常，请检查网络连接')
+		} else {
+			ElMessage.error(err.message || '请求失败')
+		}
+	}
 
 	return {
 		getDataList,

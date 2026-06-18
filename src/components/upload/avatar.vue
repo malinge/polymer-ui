@@ -1,7 +1,6 @@
 <template>
   <el-upload
       class="avatar-uploader"
-      :action="constant.uploadUrl"
       :show-file-list="false"
       :http-request="httpRequest"
       :on-success="handleAvatarSuccess"

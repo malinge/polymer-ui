@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import ElementPlus from 'element-plus'
+import ElementPlus, {ElUpload} from 'element-plus'
 import App from './App.vue'
 import { createPinia } from 'pinia'
 import { directive } from './utils/directive'
@@ -23,12 +23,21 @@ import CodeMirror from '@/components/code-mirror'
 import SvgIcon from '@/components/svg-icon'
 import VueDOMPurifyHTML from 'vue-dompurify-html' // 解决v-html 的安全隐患
 
+import cache from '@/utils/cache';
+
 VXETable.setup({
 	zIndex: 3000,
 	select: {
 		transfer: true
 	}
 })
+
+// 全局配置 el-upload 的默认 headers
+ElUpload.props.headers.default = () => {
+	return {
+		'Authorization': cache.getToken()
+	};
+};
 
 const app = createApp(App)
 app.use(createPinia())

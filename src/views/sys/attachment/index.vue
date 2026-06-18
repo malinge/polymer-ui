@@ -12,7 +12,6 @@
       </el-form-item>
       <el-form-item v-auth="'sys:attachment:save'">
         <el-upload
-          :action="constant.uploadUrl"
           :before-upload="beforeUpload"
           :http-request="httpRequest"
           :on-success="handleSuccess"

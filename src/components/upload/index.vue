@@ -24,7 +24,6 @@
         <div class="main">
           <el-upload
             class="main-upload"
-            :action="constant.uploadUrl"
             :show-file-list="false"
             :http-request="httpRequest"
             :on-success="onSuccess"
@@ -44,7 +43,6 @@
           <slot name="upload">
             <el-upload
               class="main-upload"
-              :action="constant.uploadUrl"
               :show-file-list="false"
               :http-request="httpRequest"
               :on-success="onSuccess"

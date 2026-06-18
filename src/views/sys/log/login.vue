@@ -19,7 +19,7 @@
         <el-button @click="getDataList()">查询</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="downloadExcel()">导出</el-button>
+        <el-button type="primary" @click="exportHandle()">导出</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -99,11 +99,11 @@
 <script setup lang="ts" name="SysLogLogin">
 import { useCrud } from "@/hooks";
 import { reactive } from "vue";
-import { useLogLoginExportApi } from "@/api/sys/log";
 import { IHooksOptions } from "@/hooks/interface";
 
 const state: IHooksOptions = reactive({
   dataListUrl: "/sys/log/login/page",
+  exportUrl: "/sys/log/login/export",
   queryForm: {
     username: "",
     address: "",
@@ -111,10 +111,5 @@ const state: IHooksOptions = reactive({
   },
 });
 
-const downloadExcel = () => {
-  useLogLoginExportApi();
-  return;
-};
-
-const { getDataList, sizeChangeHandle, currentChangeHandle } = useCrud(state);
+const { getDataList, sizeChangeHandle, currentChangeHandle, exportHandle } = useCrud(state);
 </script>

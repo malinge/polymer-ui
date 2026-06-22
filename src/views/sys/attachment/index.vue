@@ -11,14 +11,17 @@
         <el-button @click="getDataList()">查询</el-button>
       </el-form-item>
       <el-form-item v-auth="'sys:attachment:save'">
-        <el-upload
-          :before-upload="beforeUpload"
-          :http-request="httpRequest"
-          :on-success="handleSuccess"
-          :show-file-list="false"
-        >
-          <el-button type="primary">上传</el-button>
-        </el-upload>
+        <Upload
+            ref="uploadRef"
+            :accept="[]"
+            :max-size="100"
+            :no-file-list = true
+            @success="handleUploadSuccess"
+            @error="handleUploadError">
+          <template #upload>
+            <el-button type="primary" :loading="uploadLoading">上传</el-button>
+          </template>
+        </Upload>
       </el-form-item>
       <el-form-item>
         <el-button
@@ -114,16 +117,18 @@
 <script setup lang="ts" name="SysAttachmentIndex">
 import { useCrud } from "@/hooks";
 import { reactive, ref } from "vue";
-import constant from "@/utils/constant";
 import { convertSizeFormat } from "@/utils/tool";
 import { IHooksOptions } from "@/hooks/interface";
 import { ElMessage } from "element-plus";
 import type { UploadProps } from "element-plus";
 import { useAttachmentSubmitApi } from "@/api/sys/attachment";
-import {useUpload} from "@/hooks/useUpload";
+import {type AttachmentUploadResult} from "@/hooks/useFileUpload";
+import Upload from "@/components/upload/index.vue";
 
 const tableRef = ref();
-const {httpRequest } = useUpload()
+
+const uploadRef = ref<InstanceType<typeof Upload>>();
+const uploadLoading = ref(false);
 
 const state: IHooksOptions = reactive({
   dataListUrl: "/sys/attachment/page",
@@ -135,36 +140,53 @@ const state: IHooksOptions = reactive({
   },
 });
 
-const dataForm = reactive({
-  name: "",
-  platform: "",
-  size: "",
-  url: "",
-});
+/**
+ * 上传成功回调
+ * 直接使用 AttachmentUploadResult 保存附件记录
+ */
+const handleUploadSuccess = (result: AttachmentUploadResult): void => {
+  // 保存附件记录到后端
+  useAttachmentSubmitApi(result)
+      .then(() => {
+        ElMessage.success({
+          message: `保存附件记录成功`,
+          duration: 3000,
+          onClose: () => {
+            getDataList()
+            // 需重置上传组件的 loading 状态
+            uploadRef.value?.resetUploadStatus();
+          },
+        })
+      })
+      .catch((error) => {
+        const message = error?.message || '保存附件记录失败'
+        ElMessage.error(message)
+      })
+}
 
-const handleSuccess: UploadProps["onSuccess"] = (res) => {
+/**
+ * 上传失败回调
+ */
+const handleUploadError = (error: Error): void => {
+  ElMessage.error(`上传失败：${error.message}`)
+}
 
-  Object.assign(dataForm, res);
-
-  useAttachmentSubmitApi(dataForm).then(() => {
-    ElMessage.success({
-      message: "上传成功",
-      duration: 500,
-      onClose: () => {
-        getDataList();
-      },
-    });
-  });
-};
-
-const beforeUpload: UploadProps["beforeUpload"] = (file) => {
-  if (file.size / 1024 / 1024 / 1024 / 1024 > 1) {
-    ElMessage.error("文件大小不能超过100M");
-    return false;
+/**
+ * 上传前校验
+ */
+const beforeUpload: UploadProps['beforeUpload'] = (file) => {
+  // 校验文件大小（100MB）
+  const maxSize = 100 * 1024 * 1024 // 100MB
+  if (file.size > maxSize) {
+    ElMessage.error('文件大小不能超过 100MB')
+    return false
   }
-  return true;
-};
+  return true
+}
 
+/**
+ * 使用 useCrud 钩子
+ */
 const {
   getDataList,
   sizeChangeHandle,

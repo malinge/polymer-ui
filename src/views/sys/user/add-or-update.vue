@@ -27,6 +27,24 @@
                 style="width: 100%"
             />
           </el-form-item>
+
+          <!-- ========== 附件上传 ========== -->
+          <el-form-item prop="attachments" label="附件">
+            <Upload
+                v-model:file-list="dataForm.attachments"
+                :accept="[]"
+                :max-size="50"
+                @error="handleUploadError"
+            >
+              <template #upload>
+                <el-button type="primary" size="small">
+                  <el-icon><UploadIcon /></el-icon>
+                  选择附件
+                </el-button>
+              </template>
+            </Upload>
+          </el-form-item>
+
 				</el-col>
 
 				<el-col :span="12">
@@ -58,6 +76,20 @@
 					<el-form-item prop="status" label="用户状态">
 						<fast-radio-group v-model="dataForm.status" dict-type="user_status"></fast-radio-group>
 					</el-form-item>
+          <!-- ========== 图片上传 ========== -->
+          <el-form-item prop="images" label="图片">
+            <Upload
+                v-model:file-list="dataForm.images"
+                only-image
+                :accept="['jpg', 'png', 'jpeg', 'gif', 'webp']"
+                :max-size="20"
+                :max-count="9"
+                @error="handleUploadError"
+            />
+            <div style="margin-top: 6px; color: #909399; font-size: 12px">
+              共 {{ dataForm.images.length }} 张图片，最多 9 张
+            </div>
+          </el-form-item>
 				</el-col>
 			</el-row>
 		</el-form>
@@ -77,6 +109,8 @@
 	import { useRoleListApi } from '@/api/sys/role'
 	import { useCityListApi } from '@/api/sys/city'
   import AvatarUpload from '@/components/upload/avatar.vue';
+  import Upload from '@/components/upload/index.vue'
+  import type { AttachmentUploadResult } from '@/hooks/useFileUpload'
 
 	const emit = defineEmits(['refreshDataList'])
 
@@ -109,6 +143,8 @@
     city: [] as string[],
 		roleIdList: [] as any[],
 		postIdList: [] as any[],
+    attachments: [] as AttachmentUploadResult[],
+    images: [] as AttachmentUploadResult[],
 		status: 1
 	})
 
@@ -176,6 +212,11 @@
 			Object.assign(dataForm, res.data)
 		})
 	}
+
+  // ========== 上传错误回调 ==========
+  const handleUploadError = (error: Error) => {
+    ElMessage.error(error.message || '上传失败')
+  }
 
 	const dataRules = ref({
 		username: [{ required: true, message: '必填项不能为空', trigger: 'blur' }],

@@ -46,10 +46,11 @@
           </el-form-item>
           <el-form-item v-auth="'sys:user:import'">
             <el-upload
-              :action="uploadUserExcelUrl"
-              :before-upload="beforeUpload"
-              :on-success="handleSuccess"
-              :show-file-list="false"
+                :http-request="handleUserImport"
+                :before-upload="beforeUpload"
+                :on-success="handleSuccess"
+                :on-error="handleError"
+                :show-file-list="false"
             >
               <el-button type="info">导入</el-button>
             </el-upload>
@@ -166,7 +167,8 @@ import AddOrUpdate from "./add-or-update.vue";
 import { IHooksOptions } from "@/hooks/interface";
 import { ElMessage, UploadProps } from "element-plus";
 import DeptTree from "./dept-tree.vue";
-import constant from "@/utils/constant";
+import {importUserData} from "@/api/sys/user";
+import {useFileUpload} from "@/hooks/useFileUpload";
 const tableRef = ref();
 
 const state: IHooksOptions = reactive({
@@ -182,6 +184,7 @@ const state: IHooksOptions = reactive({
   },
 });
 
+const { uploadDataImport } = useFileUpload()
 const addOrUpdateRef = ref();
 const addOrUpdateHandle = (id?: number) => {
   addOrUpdateRef.value.init(id);
@@ -192,10 +195,13 @@ const handleDeptClick = (deptId: number) => {
   getDataList();
 };
 
-// 导入用户excel文件
-const uploadUserExcelUrl = constant.apiUrl + "/sys/user/import";
+const handleUserImport = async (options: any) => {
+  return await uploadDataImport(options, {
+    importApi: importUserData
+  })
+}
 
-const handleSuccess: UploadProps["onSuccess"] = (res, file) => {
+const handleSuccess: UploadProps["onSuccess"] = (res) => {
   if (res.code !== 0) {
     ElMessage.error("上传失败：" + res.msg);
     return false;
@@ -210,13 +216,19 @@ const handleSuccess: UploadProps["onSuccess"] = (res, file) => {
   });
 };
 
-const beforeUpload: UploadProps["beforeUpload"] = (file) => {
-  if (file.size / 1024 / 1024 / 1024 / 1024 > 1) {
-    ElMessage.error("文件大小不能超过100M");
-    return false;
+const beforeUpload : UploadProps["beforeUpload"] = (file) => {
+  // 只做必要的文件大小校验
+  const isLt10M = file.size / 1024 / 1024 < 10
+  if (!isLt10M) {
+    ElMessage.error('文件大小不能超过10MB')
+    return false
   }
-  return true;
+  return true
 };
+
+const handleError = (error: Error): void => {
+  ElMessage.error(`导入失败：${error.message}`)
+}
 
 const {
   getDataList,

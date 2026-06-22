@@ -2,7 +2,7 @@
   <el-upload
       class="avatar-uploader"
       :show-file-list="false"
-      :http-request="httpRequest"
+      :http-request="uploadAttachment"
       :on-success="handleAvatarSuccess"
       :before-upload="beforeAvatarUpload">
     <!-- 使用容器包裹头像和操作层 -->
@@ -17,11 +17,10 @@
   </el-upload>
 </template>
 <script setup lang="ts">
-import constant from "@/utils/constant";
 import {Delete, Plus} from "@element-plus/icons-vue";
 import { ElMessage, type UploadProps } from "element-plus";
 import { updateUserAvatar } from '@/api/sys/avatar'
-import {useUpload} from "@/hooks/useUpload";
+import {useFileUpload} from "@/hooks/useFileUpload";
 import {onMounted, ref, watch} from "vue";
 import FileUrlUtils from "@/utils/fileUrlUtils";
 
@@ -45,7 +44,7 @@ const props = defineProps({
 
 // 定义 Emits 事件
 const emit = defineEmits(['update:modelValue']); // 新增 remove 事件
-const { httpRequest } = useUpload()
+const { uploadAttachment } = useFileUpload()
 const previewUrl = ref('');
 
 // 获取预览URL

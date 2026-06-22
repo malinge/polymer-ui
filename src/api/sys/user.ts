@@ -37,3 +37,15 @@ export const useListByDeptIdApi = (deptId: number) => {
 	// sub 是否查询子集用户（1：查询；0不查询）
 	return service.get('/sys/user/getUserListByDeptId/' + deptId+ '/1')
 }
+
+// 用户数据导入
+export const importUserData = (data: { file: File }) => {
+	const formData = new FormData()
+	formData.append('file', data.file)
+
+	return service.post('/sys/user/import', formData, {
+		headers: {
+			'Content-Type': 'multipart/form-data'
+		}
+	})
+}

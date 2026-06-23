@@ -205,7 +205,7 @@ export const generateRoutes = (menuList: any): RouteRecordRaw[] => {
 			children: [],
 			meta: {
 				title: menu.name,
-				icon: menu.icon,
+				icon: menu.icon && menu.icon !== 'null' && menu.icon !== 'undefined' ? menu.icon : '',
 				id: '' + menu.id,
 				url: menu.url,
 				cache: true,

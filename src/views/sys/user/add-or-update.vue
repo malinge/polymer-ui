@@ -4,8 +4,16 @@
 			<el-row>
 				<el-col :span="12">
           <el-form-item prop="avatar" label="用户头像">
-              <!-- 使用 v-model 绑定到父组件的数据 -->
-              <AvatarUpload v-model="dataForm.avatar" :enable-remove-action="false"/>
+              <UploadComponent
+                  v-model:file-list="avatarList"
+                  no-file-list
+                  only-image
+                  :accept="['jpg', 'png', 'jpeg']"
+                  :max-size="10"
+                  :max-count="1"
+                  @success="handleUploadSuccess"
+                  @error="handleUploadError"
+              />
           </el-form-item>
 					<el-form-item prop="username" label="用户账号">
 						<el-input v-model="dataForm.username" placeholder="用户账号"></el-input>
@@ -27,30 +35,12 @@
                 style="width: 100%"
             />
           </el-form-item>
-
-          <!-- ========== 附件上传 ========== -->
-          <el-form-item prop="attachments" label="附件">
-            <Upload
-                v-model:file-list="dataForm.attachments"
-                :accept="[]"
-                :max-size="50"
-                @error="handleUploadError"
-            >
-              <template #upload>
-                <el-button type="primary" size="small">
-                  <el-icon><UploadIcon /></el-icon>
-                  选择附件
-                </el-button>
-              </template>
-            </Upload>
-          </el-form-item>
-
-				</el-col>
-
-				<el-col :span="12">
           <el-form-item prop="password" label="用户密码">
             <el-input v-model="dataForm.password" type="password" placeholder="密码"></el-input>
           </el-form-item>
+				</el-col>
+
+				<el-col :span="12">
 					<el-form-item prop="email" label="用户邮箱">
 						<el-input v-model="dataForm.email" placeholder="邮箱"></el-input>
 					</el-form-item>
@@ -76,20 +66,6 @@
 					<el-form-item prop="status" label="用户状态">
 						<fast-radio-group v-model="dataForm.status" dict-type="user_status"></fast-radio-group>
 					</el-form-item>
-          <!-- ========== 图片上传 ========== -->
-          <el-form-item prop="images" label="图片">
-            <Upload
-                v-model:file-list="dataForm.images"
-                only-image
-                :accept="['jpg', 'png', 'jpeg', 'gif', 'webp']"
-                :max-size="20"
-                :max-count="9"
-                @error="handleUploadError"
-            />
-            <div style="margin-top: 6px; color: #909399; font-size: 12px">
-              共 {{ dataForm.images.length }} 张图片，最多 9 张
-            </div>
-          </el-form-item>
 				</el-col>
 			</el-row>
 		</el-form>
@@ -101,18 +77,18 @@
 </template>
 
 <script setup lang="ts">
-	import { reactive, ref } from 'vue'
+	import { reactive, ref, computed } from 'vue'
 	import { ElMessage } from 'element-plus/es'
 	import { useDeptListApi } from '@/api/sys/dept'
 	import { useUserApi, useUserSubmitApi } from '@/api/sys/user'
 	import { usePostListApi } from '@/api/sys/post'
 	import { useRoleListApi } from '@/api/sys/role'
 	import { useCityListApi } from '@/api/sys/city'
-  import AvatarUpload from '@/components/upload/avatar.vue';
-  import Upload from '@/components/upload/index.vue'
-  import type { AttachmentUploadResult } from '@/hooks/useFileUpload'
+  import {type AttachmentUploadResult} from "@/hooks/useFileUpload";
+  import UploadComponent from "@/components/upload/index.vue";
 
 	const emit = defineEmits(['refreshDataList'])
+  const uploadRef = ref<InstanceType<typeof UploadComponent>>();
 
 	const visible = ref(false)
 	const postList = ref<any[]>([])
@@ -143,10 +119,31 @@
     city: [] as string[],
 		roleIdList: [] as any[],
 		postIdList: [] as any[],
-    attachments: [] as AttachmentUploadResult[],
-    images: [] as AttachmentUploadResult[],
 		status: 1
 	})
+
+  // 使用 computed 带有 getter 和 setter
+  const avatarList = computed({
+    get: () => {
+      if (dataForm.avatar) {
+        return [{
+          name: '头像.jpg',
+          url: dataForm.avatar,
+          size: 20000,
+          platform: 'MINIO'
+        }]
+      }
+      return []
+    },
+    set: (newValue) => {
+      // 当上传组件更新 file-list 时，更新 dataForm.avatar
+      if (newValue && newValue.length > 0) {
+        dataForm.avatar = newValue[0].url
+      } else {
+        dataForm.avatar = ''
+      }
+    }
+  })
 
 	const init = (id?: number) => {
 		visible.value = true
@@ -168,6 +165,21 @@
     // 每次打开弹窗时获取城市数据
     getCityList()
 	}
+
+  /**
+   * 上传成功回调
+   * 直接使用 AttachmentUploadResult 保存附件记录
+   */
+  const handleUploadSuccess = (result: AttachmentUploadResult): void => {
+    dataForm.avatar = result.url;
+    // 需重置上传组件的 loading 状态
+    uploadRef.value?.resetUploadStatus();
+  }
+
+  // ========== 上传错误回调 ==========
+  const handleUploadError = (error: Error) => {
+    ElMessage.error(error.message || '上传失败')
+  }
 
 	// 获取岗位列表
 	const getPostList = () => {
@@ -212,11 +224,6 @@
 			Object.assign(dataForm, res.data)
 		})
 	}
-
-  // ========== 上传错误回调 ==========
-  const handleUploadError = (error: Error) => {
-    ElMessage.error(error.message || '上传失败')
-  }
 
 	const dataRules = ref({
 		username: [{ required: true, message: '必填项不能为空', trigger: 'blur' }],

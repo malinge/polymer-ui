@@ -1,16 +1,25 @@
 <template>
 	<el-form ref="dataFormRef" :model="dataForm" :rules="dataRules" label-width="100px">
-		<el-form-item prop="realName" label="用户姓名">
-			<el-input v-model="dataForm.realName" placeholder="用户姓名"></el-input>
-		</el-form-item>
+    <el-form-item prop="avatar" label="用户头像">
+      <UploadComponent
+          v-model:file-list="avatarList"
+          no-file-list
+          only-image
+          :accept="['jpg', 'png', 'jpeg']"
+          :max-size="10"
+          :max-count="1"
+          @success="handleUploadSuccess"
+          @error="handleUploadError"
+      />
+    </el-form-item>
+    <el-form-item prop="gender" label="用户性别">
+      <fast-radio-group v-model="dataForm.gender" dict-type="user_gender"></fast-radio-group>
+    </el-form-item>
 		<el-form-item prop="mobile" label="手机号码">
 			<el-input v-model="dataForm.mobile" placeholder="手机号码"></el-input>
 		</el-form-item>
 		<el-form-item prop="email" label="用户邮箱">
 			<el-input v-model="dataForm.email" placeholder="邮箱"></el-input>
-		</el-form-item>
-		<el-form-item prop="gender" label="用户性别">
-			<fast-radio-group v-model="dataForm.gender" dict-type="user_gender"></fast-radio-group>
 		</el-form-item>
     <el-form-item prop="city" label="所在城市">
       <el-cascader v-model="dataForm.city" :options="cityOptions" :props="cascaderProps" filterable clearable style="width: 100%" placeholder="请选择城市" @change="handleCityChange" />
@@ -25,17 +34,18 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { reactive, ref, computed } from 'vue'
 import { validatePassword } from '@/utils/validate'
 import { useUserInfoSubmitApi } from '@/api/sys/user'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/store/modules/user'
 import FastRadioGroup from "@/components/fast-radio-group/src/fast-radio-group.vue";
 import {useCityListApi} from "@/api/sys/city";
+import UploadComponent from "@/components/upload/index.vue";
+import type {AttachmentUploadResult} from "@/hooks/useFileUpload";
 
 const userStore = useUserStore()
-const { t } = useI18n()
+const uploadRef = ref<InstanceType<typeof UploadComponent>>();
 const dataFormRef: any = ref(null)
 // 城市选项数据
 const cityOptions = ref<any[]>([])
@@ -48,7 +58,7 @@ const cascaderProps = {
 const isLoaded = ref(false) // 新增加载状态标记
 
 const dataForm = reactive({
-	realName: userStore.user.realName,
+  avatar: userStore.user.avatar,
 	mobile: userStore.user.mobile,
 	email: userStore.user.email,
 	gender: userStore.user.gender,
@@ -60,6 +70,44 @@ const init = () => {
   if (isLoaded.value) return // 已加载则跳过
   getCityList()
   isLoaded.value = true
+}
+
+// 使用 computed 带有 getter 和 setter
+const avatarList = computed({
+  get: () => {
+    if (dataForm.avatar) {
+      return [{
+        name: '头像.jpg',
+        url: dataForm.avatar,
+        size: 20000,
+        platform: 'MINIO'
+      }]
+    }
+    return []
+  },
+  set: (newValue) => {
+    // 当上传组件更新 file-list 时，更新 dataForm.avatar
+    if (newValue && newValue.length > 0) {
+      dataForm.avatar = newValue[0].url
+    } else {
+      dataForm.avatar = ''
+    }
+  }
+})
+
+/**
+ * 上传成功回调
+ * 直接使用 AttachmentUploadResult 保存附件记录
+ */
+const handleUploadSuccess = (result: AttachmentUploadResult): void => {
+  dataForm.avatar = result.url;
+  // 需重置上传组件的 loading 状态
+  uploadRef.value?.resetUploadStatus();
+}
+
+// ========== 上传错误回调 ==========
+const handleUploadError = (error: Error) => {
+  ElMessage.error(error.message || '上传失败')
 }
 
 // 获取城市列表
@@ -77,7 +125,6 @@ const handleCityChange = (value: string[]) => {
 }
 
 const dataRules = ref({
-	realName: [{ required: true, message: t('required'), trigger: 'blur' }],
 	mobile: [{ required: true, validator: validatePassword, trigger: 'blur' }]
 })
 
@@ -90,7 +137,7 @@ const handleDataForm = () => {
 		// 修改登录用户信息
 		useUserInfoSubmitApi(dataForm).then(() => {
 			// 更新状态管理
-			userStore.user.realName = dataForm.realName
+			userStore.user.avatar = dataForm.avatar
 			userStore.user.mobile = dataForm.mobile
 			userStore.user.email = dataForm.email
 			userStore.user.gender = dataForm.gender

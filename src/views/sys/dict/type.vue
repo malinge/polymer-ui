@@ -166,7 +166,6 @@ import DictData from "./data.vue";
 import { IHooksOptions } from "@/hooks/interface";
 import {useRefreshTransCacheApi} from "@/api/sys/dict";
 import { ElMessage} from "element-plus";
-import {updateUserAvatar} from "@/api/sys/avatar";
 
 const tableRef = ref();
 

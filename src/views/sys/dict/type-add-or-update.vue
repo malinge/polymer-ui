@@ -8,15 +8,15 @@
 				<el-input v-model="dataForm.dictName" placeholder="字典名称"></el-input>
 			</el-form-item>
 			<el-form-item prop="sort" label="排序">
-				<el-input-number v-model="dataForm.sort" controls-position="right" :min="0" label="排序"></el-input-number>
+				<el-input-number v-model="dataForm.sort" controls-position="right" :min="0" aria-label="排序"></el-input-number>
 			</el-form-item>
 			<el-form-item prop="remark" label="备注">
 				<el-input v-model="dataForm.remark" placeholder="备注"></el-input>
 			</el-form-item>
 			<el-form-item label="数据来源" prop="dictSource">
 				<el-radio-group v-model="dataForm.dictSource">
-					<el-radio-button :label="0">字典数据</el-radio-button>
-					<el-radio-button :label="1">动态SQL</el-radio-button>
+          <el-radio-button :value="0" label="字典数据" />
+          <el-radio-button :value="1" label="动态SQL" />
 				</el-radio-group>
 			</el-form-item>
 			<el-form-item v-if="dataForm.dictSource === 1" prop="dictSql" label="动态SQL">

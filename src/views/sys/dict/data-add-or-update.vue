@@ -10,24 +10,17 @@
 			<el-form-item prop="labelClass" label="标签样式">
 				<el-select v-model="dataForm.labelClass" style="width: 100%" clearable>
 					<el-option
-						v-for="item in [
-							{ value: 'primary', label: 'primary' },
-							{ value: 'success', label: 'success' },
-							{ value: 'info', label: 'info' },
-							{ value: 'warning', label: 'warning' },
-							{ value: 'danger', label: 'danger' }
-						]"
+						v-for="item in tagOptions"
 						:key="item.value"
 						:label="item.label"
-						:value="item.value"
-					>
-						<el-tag v-if="item.value === 'primary'" style="width: 100%">{{ item.label }}</el-tag>
-						<el-tag v-else style="width: 100%" :type="item.value">{{ item.label }}</el-tag>
+						:value="item.value">
+
+            <el-tag style="width: 100%" :type="item.value || 'info'">{{ item.label }}</el-tag>
 					</el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item prop="sort" label="排序">
-				<el-input-number v-model="dataForm.sort" controls-position="right" :min="0" label="排序"></el-input-number>
+				<el-input-number v-model="dataForm.sort" controls-position="right" :min="0" aria-label="排序"></el-input-number>
 			</el-form-item>
 			<el-form-item prop="remark" label="备注">
 				<el-input v-model="dataForm.remark" placeholder="备注"></el-input>
@@ -58,6 +51,14 @@ const dataForm = reactive({
 	sort: 0,
 	remark: ''
 })
+
+const tagOptions = [
+  { value: 'primary', label: 'primary' },
+  { value: 'success', label: 'success' },
+  { value: 'info', label: 'info' },
+  { value: 'warning', label: 'warning' },
+  { value: 'danger', label: 'danger' }
+] as const
 
 const dataRules = ref({
 	dictLabel: [{ required: true, message: '必填项不能为空', trigger: 'blur' }],

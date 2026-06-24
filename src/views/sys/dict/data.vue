@@ -33,14 +33,14 @@
       >
         <template #default="scope">
           <el-tag
-            v-if="scope.row.labelClass"
-            :type="scope.row.labelClass === 'primary' ? '' : scope.row.labelClass"
+              v-if="scope.row.labelClass"
+              :type="scope.row.labelClass === 'primary' ? 'info' : scope.row.labelClass"
           >
             {{ scope.row.dictLabel }}
           </el-tag>
           <span v-else>
-            {{ scope.row.dictLabel }}
-          </span>
+      {{ scope.row.dictLabel }}
+    </span>
         </template>
       </el-table-column>
       <el-table-column

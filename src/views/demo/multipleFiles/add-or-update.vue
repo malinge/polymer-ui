@@ -109,7 +109,8 @@
   }
 
   const dataRules = ref({
-    name: [{ required: true, message: '名称必填项不能为空', trigger: 'blur' }]
+    name: [{ required: true, message: '必填项不能为空', trigger: 'blur' }],
+    description: [{ required: true, message: '必填项不能为空', trigger: 'blur' }]
   })
 
   // ========== 上传错误回调 ==========

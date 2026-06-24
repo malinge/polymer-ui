@@ -67,16 +67,16 @@
 				<el-col :span="12">
 					<el-form-item label="生成方式" prop="generatorType">
 						<el-radio-group v-model="dataForm.generatorType">
-							<el-radio :label="0">zip压缩包</el-radio>
-							<el-radio :label="1">自定义路径</el-radio>
+              <el-radio :value="0" label="zip压缩包" />
+              <el-radio :value="1" label="自定义路径" />
 						</el-radio-group>
 					</el-form-item>
 				</el-col>
 				<el-col :span="12">
 					<el-form-item label="表单布局" prop="formLayout">
 						<el-radio-group v-model="dataForm.formLayout">
-							<el-radio :label="1">一列</el-radio>
-							<el-radio :label="2">两列</el-radio>
+              <el-radio :value="1" label="一列" />
+              <el-radio :value="2" label="两列" />
 						</el-radio-group>
 					</el-form-item>
 				</el-col>

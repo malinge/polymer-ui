@@ -3,9 +3,9 @@
 		<el-form ref="dataFormRef" :model="dataForm" :rules="dataRules" label-width="120px" @keyup.enter="submitHandle()">
 			<el-form-item prop="type" label="类型">
 				<el-radio-group v-model="dataForm.type" :disabled="update" @change="menuTypeChange(dataForm.pid)">
-					<el-radio :label="0">菜单</el-radio>
-					<el-radio :label="1">按钮</el-radio>
-					<el-radio :label="2">接口</el-radio>
+          <el-radio :value="0" label="菜单" />
+          <el-radio :value="1" label="按钮" />
+          <el-radio :value="2" label="接口" />
 				</el-radio-group>
 			</el-form-item>
 			<el-form-item prop="name" label="名称">
@@ -27,12 +27,12 @@
 				<el-input v-model="dataForm.url" placeholder="路由"></el-input>
 			</el-form-item>
 			<el-form-item prop="sort" label="排序">
-				<el-input-number v-model="dataForm.sort" controls-position="right" :min="0" label="排序"></el-input-number>
+				<el-input-number v-model="dataForm.sort" controls-position="right" :min="0" aria-label="排序"></el-input-number>
 			</el-form-item>
 			<el-form-item v-if="dataForm.type === 0" prop="openStyle" label="打开方式">
 				<el-radio-group v-model="dataForm.openStyle">
-					<el-radio :label="0">内部打开</el-radio>
-					<el-radio :label="1">外部打开</el-radio>
+          <el-radio :value="0" label="内部打开" />
+          <el-radio :value="1" label="外部打开" />
 				</el-radio-group>
 			</el-form-item>
 			<el-form-item prop="authority" label="授权标识">

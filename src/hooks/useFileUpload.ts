@@ -115,15 +115,22 @@ export const useFileUpload = () => {
     }
 
     /**
+     * 上传附件 - 直接接收 File 对象
+     */
+    const uploadAttachmentSimplify = async (file: File): Promise<AttachmentUploadResult> => {
+        if (isClientUpload) {
+            return handleClientUpload(file)
+        } else {
+            return handleServerUpload(file)
+        }
+    }
+
+    /**
      * 上传附件
      * 返回类型：AttachmentUploadResult
      */
     const uploadAttachment = async (options: UploadRequestOptions): Promise<AttachmentUploadResult > => {
-        if (isClientUpload) {
-            return handleClientUpload(options.file)
-        } else {
-            return handleServerUpload(options.file)
-        }
+        return uploadAttachmentSimplify(options.file)
     }
 
     /**
@@ -158,9 +165,10 @@ export const useFileUpload = () => {
 
     return {
         uploadAttachment,     // 附件上传
+        uploadAttachmentSimplify,     // 附件上传简化
         uploadDataImport      // 数据文件导入
     }
 }
 
 // 导出类型供外部使用
-export type { AttachmentUploadResult, DataImportResult, DataImportParams }
+export type { AttachmentUploadResult, DataImportResult, DataImportParams, ApiResponse }

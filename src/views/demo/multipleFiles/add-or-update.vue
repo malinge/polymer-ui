@@ -4,6 +4,9 @@
 				<el-form-item label="名称" prop="name">
 					<el-input v-model="dataForm.name" placeholder="名称"></el-input>
 				</el-form-item>
+      <el-form-item label="描述" prop="description">
+        <WangEditor :key="editorKey" v-model="dataForm.description" :style="'height: 300px'" placeholder="请输入..."></WangEditor>
+      </el-form-item>
       <!-- ========== 图片上传 ========== -->
       <el-form-item prop="images" label="图片">
         <UploadComponent
@@ -45,86 +48,98 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from 'vue'
-import {ElMessage} from 'element-plus/es'
-import {useMultipleFilesApi, useMultipleFilesSubmitApi} from "@/api/demo/multipleFiles";
-import UploadComponent from '@/components/upload/index.vue'
-import { Upload } from '@element-plus/icons-vue' // 导入 Upload 图标
-import type { AttachmentUploadResult } from '@/hooks/useFileUpload'
+  import {reactive, ref} from 'vue'
+  import {ElFormItem, ElMessage} from 'element-plus/es'
+  import {useMultipleFilesApi, useMultipleFilesSubmitApi} from "@/api/demo/multipleFiles";
+  import UploadComponent from '@/components/upload/index.vue'
+  import { Upload } from '@element-plus/icons-vue' // 导入 Upload 图标
+  import type { AttachmentUploadResult } from '@/hooks/useFileUpload'
+  import WangEditor from '@/components/wang-editor/index.vue'
 
 
-const emit = defineEmits(['refreshDataList'])
+  const emit = defineEmits(['refreshDataList'])
 
-const visible = ref(false)
-const dataFormRef = ref()
+  const visible = ref(false)
+  const dataFormRef = ref()
+  const editorKey = ref(0) // 用于强制重新创建编辑器
 
-const dataForm = reactive({
-	id: '',
-	name: '',
-  attachments: [] as AttachmentUploadResult[],
-  images: [] as AttachmentUploadResult[],
-	deptId: '',
-	creator: '',
-	createTime: '',
-	updater: '',
-	updateTime: ''
-})
+  const dataForm = reactive({
+    id: '',
+    name: '',
+    description: '',
+    attachments: [] as AttachmentUploadResult[],
+    images: [] as AttachmentUploadResult[],
+    deptId: '',
+    creator: '',
+    createTime: '',
+    updater: '',
+    updateTime: ''
+  })
 
-const init = (id?: number) => {
-	visible.value = true
-	dataForm.id = ''
+  const init = (id?: number) => {
+    visible.value = true
+    dataForm.id = ''
 
-	// 重置表单数据
-	if (dataFormRef.value) {
-		dataFormRef.value.resetFields()
-	}
+    // 增加 key 值，强制重新创建编辑器组件
+    editorKey.value += 1
 
-	if (id) {
-		getMultipleFiles(id)
-	}
+    // 重置表单数据
+    if (dataFormRef.value) {
+      dataFormRef.value.resetFields()
+    }
 
-}
+    if (id) {
+      getMultipleFiles(id)
+    }
 
+  }
 
+  const getMultipleFiles = (id: number) => {
+    useMultipleFilesApi(id).then(res => {
+      // 在数据源头就处理所有可能的 null 值
+      const data = {
+        ...res.data,
+        description: res.data.description ?? '',  // 使用 ?? 更安全
+        attachments: Array.isArray(res.data.attachments) ? res.data.attachments : [],
+        images: Array.isArray(res.data.images) ? res.data.images : []
+      }
 
-const getMultipleFiles = (id: number) => {
-	useMultipleFilesApi(id).then(res => {
-		Object.assign(dataForm, res.data)
-	})
-}
+      Object.assign(dataForm, data)
+    })
+  }
 
-const dataRules = ref({
-  name: [{ required: true, message: '名称必填项不能为空', trigger: 'blur' }]
-})
+  const dataRules = ref({
+    name: [{ required: true, message: '名称必填项不能为空', trigger: 'blur' }]
+  })
 
-// ========== 上传错误回调 ==========
-const handleUploadError = (error: Error) => {
-  ElMessage.error(error.message || '上传失败')
-}
+  // ========== 上传错误回调 ==========
+  const handleUploadError = (error: Error) => {
+    ElMessage.error(error.message || '上传失败')
+  }
 
-// 表单提交
-const submitHandle = () => {
-	dataFormRef.value.validate((valid: boolean) => {
-		if (!valid) {
-			return false
-		}
+  // 表单提交
+  const submitHandle = () => {
+    dataFormRef.value.validate((valid: boolean) => {
+      if (!valid) {
+        return false
+      }
 
-		useMultipleFilesSubmitApi(dataForm).then(() => {
-			ElMessage.success({
-				message: '操作成功',
-				duration: 500,
-				onClose: () => {
-					visible.value = false
-					emit('refreshDataList')
-				}
-			})
-		})
-	})
-}
+      useMultipleFilesSubmitApi(dataForm).then(() => {
+        ElMessage.success({
+          message: '操作成功',
+          duration: 500,
+          onClose: () => {
+            visible.value = false
+            emit('refreshDataList')
+          }
+        })
+      })
+    })
+  }
 
-defineExpose({
-	init
-})
+  defineExpose({
+    init
+  })
 
 </script>
 

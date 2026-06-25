@@ -69,7 +69,7 @@ const editorConfig: Partial<IEditorConfig> = {
           const result = await uploadAttachmentSimplify(file)
           // 获取完整URL
           const url = await FileUrlUtils.getFullUrl(result.url)
-          insertFn(url, result.name, '')
+          insertFn(url, result.name, result.url)
         } catch (error) {
           ElMessage.error('图片上传失败，请重试')
         }

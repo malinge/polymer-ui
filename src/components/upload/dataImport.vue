@@ -32,7 +32,7 @@
             <!-- 模板下载 -->
             <div class="step-section">
               <div class="section-title">
-                请按照数据模板的格式准备要导入的数据。
+                一、请按照数据模板的格式准备要导入的数据。
                 <el-link
                     type="primary"
                     :disabled="templateDownloading"
@@ -47,7 +47,7 @@
             <!-- 查重规则 -->
             <div class="step-section">
               <div class="section-title">
-                请选择数据重复时的处理方式
+                二、请选择数据重复时的处理方式
                 <span class="rule-label">（查重规则：</span>
                 <span class="rule-label" v-for="(field, index) in duplicateFields" :key="field">
                   【{{ field }}】<span v-if="index < duplicateFields.length - 1">、</span>
@@ -78,7 +78,7 @@
 
             <!-- 文件选择 -->
             <div class="step-section file-upload-area">
-              <div class="section-title">请选择需要导入的文件</div>
+              <div class="section-title">三、请选择需要导入的文件</div>
               <div class="file-select-wrapper">
                 <el-input
                     v-model="selectedFileName"
@@ -112,7 +112,7 @@
               {{ importResult.message }}
             </div>
             <div v-if="!importResult.passed && importResult.errorFileUrl" class="result-error-download">
-              <el-link type="primary" @click="downloadHandle(importResult.errorFileUrl)">下载错误数据</el-link>
+              <el-link type="primary" @click="downloadHandle(importResult.errorFileUrl, '错误.xlsx')">下载错误数据</el-link>
             </div>
           </div>
         </div>
@@ -216,23 +216,10 @@ interface StrategyOption {
 
 /** 导入导出记录 VO */
 interface SysImportExportRecordVO {
-  id: number
   operatorName: string
-  businessType: string
-  operationType: string
-  totalCount: number
-  successCount: number
-  errorCount: number
-  conflictHandleCount: number
-  importStrategy: string
   errorFileUrl: string
-  resultFileUrl: string
   remark: string
-  deptId: number
-  creator: number
   createTime: string
-  updater: number
-  updateTime: string
 }
 
 // ==================== Props ====================
@@ -368,23 +355,8 @@ const fetchHistoryList = async () => {
   historyLoading.value = true
   try {
     const response = await useImportExportRecordListApi()
-    const result = response.data as ApiResponse<SysImportExportRecordVO[]>
+    historyList.value = response.data
 
-    let list = result || []
-
-    // 如果传入了 businessType，则过滤
-    if (props.businessType) {
-      list = list.filter(item => item.businessType === props.businessType)
-    }
-
-    // 按创建时间倒序排列（最新的在前）
-    list.sort((a, b) => {
-      if (!a.createTime) return 1
-      if (!b.createTime) return -1
-      return new Date(b.createTime).getTime() - new Date(a.createTime).getTime()
-    })
-
-    historyList.value = list
   } catch (error) {
     console.error('获取历史记录失败:', error)
     ElMessage.error('获取历史记录失败，请稍后重试')

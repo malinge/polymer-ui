@@ -24,14 +24,17 @@
             <el-button v-auth="'sys:user:delete'" type="danger" @click="deleteBatchHandle()">删除</el-button>
           </el-form-item>
           <el-form-item v-auth="'sys:user:import'">
-            <el-upload
-                :http-request="handleUserImport"
-                :before-upload="beforeUpload"
-                :on-success="handleSuccess"
-                :on-error="handleError"
-                :show-file-list="false">
-              <el-button type="info">导入</el-button>
-            </el-upload>
+            <DataImport
+                ref="dataImportRef"
+                import-url="/sys/user/import"
+                :accept="['xlsx', 'xls']"
+                :max-size="2"
+                :max-records="10000"
+                business-name="用户"
+                templateUrl="/sys/user/exportTemplate"
+                duplicate-fields-api="/sys/user/uniqueFields"
+                @success="handleImportSuccess"
+                @error="handleImportError"/>
           </el-form-item>
           <el-form-item>
             <el-button v-auth="'sys:user:export'" type="success" @click="exportHandle()">导出</el-button>
@@ -73,7 +76,6 @@
       </el-card>
     </el-col>
   </el-row>
-  <!-- 弹窗, 新增 / 修改 -->
   <add-or-update ref="addOrUpdateRef" @refresh-data-list="getDataList"></add-or-update>
 </template>
 
@@ -82,12 +84,11 @@ import {useCrud} from "@/hooks";
 import {reactive, ref} from "vue";
 import AddOrUpdate from "./add-or-update.vue";
 import {IHooksOptions} from "@/hooks/interface";
-import {ElMessage, UploadProps} from "element-plus";
+import {ElMessage} from "element-plus";
 import DeptTree from "./dept-tree.vue";
-import {importUserData} from "@/api/sys/user";
-import {useFileUpload} from "@/hooks/useFileUpload";
+import DataImport from "@/components/upload/dataImport.vue"
+import type { DataImportResult } from "@/hooks/useFileUpload"
 
-const tableRef = ref();
 const state: IHooksOptions = reactive({
   dataListUrl: "/sys/user/page",
   deleteUrl: "/sys/user",
@@ -101,8 +102,10 @@ const state: IHooksOptions = reactive({
   },
 });
 
-const {uploadDataImport} = useFileUpload()
+const tableRef = ref();
+const dataImportRef = ref()
 const addOrUpdateRef = ref();
+
 const addOrUpdateHandle = (id?: number) => {
   addOrUpdateRef.value.init(id);
 };
@@ -112,40 +115,21 @@ const handleDeptClick = (deptId: number) => {
   getDataList();
 };
 
-const handleUserImport = async (options: any) => {
-  return await uploadDataImport(options, {
-    importApi: importUserData
+const handleImportSuccess = (result: DataImportResult) => {
+  ElMessage.success({
+    message: result.message || '导入完成',
+    duration: 3000,
+    onClose: () => {
+      getDataList()
+    },
   })
 }
 
-const handleSuccess: UploadProps["onSuccess"] = (res) => {
-  if (res.code !== 0) {
-    ElMessage.error("上传失败：" + res.msg);
-    return false;
-  }
-
-  ElMessage.success({
-    message: "上传成功",
-    duration: 500,
-    onClose: () => {
-      getDataList();
-    },
-  });
-};
-
-const beforeUpload: UploadProps["beforeUpload"] = (file) => {
-  // 只做必要的文件大小校验
-  const isLt10M = file.size / 1024 / 1024 < 10
-  if (!isLt10M) {
-    ElMessage.error('文件大小不能超过10MB')
-    return false
-  }
-  return true
-};
-
-const handleError = (error: Error): void => {
-  ElMessage.error(`导入失败：${error.message}`)
+const handleImportError = (error: Error) => {
+  console.error('导入失败:', error)
+  ElMessage.error(error.message || '导入失败')
 }
+
 
 const {
   getDataList,

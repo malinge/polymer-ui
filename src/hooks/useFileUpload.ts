@@ -172,7 +172,7 @@ export const useFileUpload = () => {
             const result: DataImportResult = {
                 passed: response.data?.passed !== false,
                 errorFileUrl: response.data?.errorFileUrl || '',
-                message: response.data?.message || response.msg || '导入完成'
+                message: response.data?.message || '导入完成'
             }
 
             return result

@@ -293,6 +293,13 @@ const strategyOptions: StrategyOption[] = [
   { label: '更新系统原有数据', value: 'update' },
 ]
 
+// 定义不带参数的 emit
+const emit = defineEmits<{
+  (e: 'success'): void
+  (e: 'error'): void
+}>()
+
+
 // ==================== 响应式 ====================
 
 const fileInputRef = ref<HTMLInputElement>()
@@ -478,7 +485,7 @@ const handleStartImport = async () => {
         }
     )
     currentStep.value = 3
-
+    emit('success')
   } catch (error) {
     const err = error instanceof Error ? error : new Error('导入失败')
     importResult.value = {
@@ -488,6 +495,7 @@ const handleStartImport = async () => {
     }
     currentStep.value = 3
     ElMessage.error(err.message)
+    emit('error')
   } finally {
     loading.value = false
   }

@@ -115,19 +115,14 @@ const handleDeptClick = (deptId: number) => {
   getDataList();
 };
 
-const handleImportSuccess = (result: DataImportResult) => {
-  ElMessage.success({
-    message: result.message || '导入完成',
-    duration: 3000,
-    onClose: () => {
-      getDataList()
-    },
-  })
+// 不接收参数
+const handleImportSuccess = () => {
+  getDataList()
 }
 
-const handleImportError = (error: Error) => {
-  console.error('导入失败:', error)
-  ElMessage.error(error.message || '导入失败')
+const handleImportError = () => {
+  getDataList()
+  //ElMessage.error('导入失败')
 }
 
 

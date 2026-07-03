@@ -37,7 +37,7 @@
                 @error="handleImportError"/>
           </el-form-item>
           <el-form-item>
-            <el-button v-auth="'sys:user:export'" type="success" @click="exportHandle()">导出</el-button>
+            <el-button v-auth="'sys:user:export'" :loading="state.exportLoading" type="success" @click="exportHandle()">导出</el-button>
           </el-form-item>
         </el-form>
         <el-table
@@ -91,6 +91,7 @@ const state: IHooksOptions = reactive({
   dataListUrl: "/sys/user/page",
   deleteUrl: "/sys/user",
   exportUrl: "/sys/user/export",
+  exportLoading: false,
   primaryKey: "id",
   queryForm: {
     username: "",

@@ -40,7 +40,7 @@
       <el-table-column prop="createTime" label="操作时间" header-align="center" align="center" width="160"></el-table-column>
       <el-table-column prop="totalCount" label="总数据量" header-align="center" align="center" width="90"></el-table-column>
       <el-table-column prop="successCount" label="成功量" header-align="center" align="center" width="70"></el-table-column>
-      <el-table-column prop="failCount" label="失败量" header-align="center" align="center" width="70"></el-table-column>
+      <el-table-column prop="errorCount" label="失败量" header-align="center" align="center" width="70"></el-table-column>
       <el-table-column prop="conflictHandleCount" label="冲突量" header-align="center" align="center" width="70"></el-table-column>
       <el-table-column prop="importStrategy" label="策略" header-align="center" align="center" width="100">
         <template #default="{ row }">{{ importStrategyMap[row.importStrategy] || row.importStrategy }}</template>

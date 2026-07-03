@@ -65,8 +65,7 @@
                 <el-select
                     v-model="strategy"
                     placeholder="请选择处理方式"
-                    size="default"
-                    style="width: 350px">
+                    size="default">
                   <el-option
                       v-for="item in strategyOptions"
                       :key="item.value"
@@ -83,8 +82,7 @@
                 <el-input
                     v-model="selectedFileName"
                     placeholder="请选择文件"
-                    disabled
-                    style="width: 350px" />
+                    disabled />
                 <el-button type="primary" @click="triggerFileSelect">选择文件</el-button>
                 <input
                     ref="fileInputRef"
@@ -663,13 +661,15 @@ const {
       font-size: 12px;
       color: #909399;
       margin-top: 4px;
-      padding-left: 4px;
+      text-indent: 2em;  /* 首行缩进2个汉字 */
     }
 
     .strategy-select-wrapper {
       margin-top: 10px;
       display: flex;
       align-items: center;
+      width: 350px;  /* 将宽度移到此处 */
+      margin-left: 24px; /* 整体向右缩进两个文字 */
 
       .strategy-label {
         font-size: 14px;
@@ -685,6 +685,8 @@ const {
       display: flex;
       gap: 10px;
       margin-top: 8px;
+      width: 450px;
+      margin-left: 24px; /* 整体向右缩进两个文字 */
     }
   }
 
@@ -815,3 +817,5 @@ const {
 }
 
 </style>
+
+

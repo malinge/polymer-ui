@@ -257,12 +257,17 @@ export const useCrud = (options: IHooksOptions, tableRef?: any) => {
 	}
 
 	const exportHandle = async (filename?: string): Promise<void> => {
+		if (state.exportLoading) {
+			return;
+		}
+
 		if (!state.exportUrl) {
 			ElMessage.error('导出接口地址未配置')
 			return
 		}
 
 		try {
+			state.exportLoading = true;
 			// 合并参数
 			const baseParams = { ...state.queryForm }
 
@@ -303,6 +308,8 @@ export const useCrud = (options: IHooksOptions, tableRef?: any) => {
 			ElMessage.success('导出成功')
 		} catch (err: any) {
 			await handleDownloadError(err)
+		}finally {
+			state.exportLoading = false;
 		}
 	}
 

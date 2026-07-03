@@ -19,7 +19,7 @@
         <el-button @click="getDataList()">查询</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="exportHandle()">导出</el-button>
+        <el-button type="primary" :loading="state.exportLoading" @click="exportHandle()">导出</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -104,6 +104,7 @@ import { IHooksOptions } from "@/hooks/interface";
 const state: IHooksOptions = reactive({
   dataListUrl: "/sys/log/login/page",
   exportUrl: "/sys/log/login/export",
+  exportLoading: false,
   queryForm: {
     username: "",
     address: "",

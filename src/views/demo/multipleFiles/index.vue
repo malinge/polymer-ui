@@ -77,7 +77,7 @@ import DataImport from "@/components/upload/dataImport.vue";
 const state: IHooksOptions = reactive({
 	dataListUrl: '/demo/multipleFiles/page',  // 数据列表接口
 	deleteUrl: '/demo/multipleFiles',         // 删除接口
-  exportUrl: "/demo/multipleFiles/export",
+  exportUrl: "/demo/multipleFiles/export",  // 导出接口
 	queryForm: {  // 查询表单数据
 	}
 })

@@ -240,15 +240,15 @@ interface IProps {
   /** 按钮尺寸 */
   buttonSize?: 'large' | 'default' | 'small'
   /** 业务名称（用于文案展示，会自动拼接"导入模板"） */
-  businessName?: string
+  businessName: string
   /** 模板下载API地址 */
-  templateUrl?: string
+  templateUrl: string
   /** 获取查重字段列表的API地址（返回 List<String>） */
-  duplicateFieldsApi?: string
+  duplicateFieldsApi: string
   /** 默认处理策略 */
   defaultStrategy?: string
   /** 业务类型，用于筛选历史记录（如：user, dept, role 等） */
-  businessType?: string
+  businessType: string
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -352,7 +352,7 @@ const fetchDuplicateFields = async () => {
 const fetchHistoryList = async () => {
   historyLoading.value = true
   try {
-    const response = await useImportExportRecordListApi()
+    const response = await useImportExportRecordListApi(props.businessType)
     historyList.value = response.data
 
   } catch (error) {

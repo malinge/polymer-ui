@@ -4,8 +4,8 @@ export const useImportExportRecordApi = (id: number) => {
 	return service.get('/system/importExportRecord/' + id)
 }
 
-export const useImportExportRecordListApi = () => {
-	return service.get('/system/importExportRecord/list')
+export const useImportExportRecordListApi = (businessType: string) => {
+	return service.get('/system/importExportRecord/list/' + businessType)
 }
 
 export const useImportExportRecordSubmitApi = (dataForm: any) => {

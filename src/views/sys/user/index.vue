@@ -31,6 +31,7 @@
                 :max-size="2"
                 :max-records="10000"
                 business-name="用户"
+                business-type="user"
                 templateUrl="/sys/user/exportTemplate"
                 duplicate-fields-api="/sys/user/uniqueFields"
                 @success="handleImportSuccess"

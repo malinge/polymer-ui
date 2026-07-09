@@ -13,6 +13,23 @@
 			<el-form-item>
 				<el-button v-auth="'demo:multipleFiles:delete'" type="danger" @click="deleteBatchHandle()">删除</el-button>
 			</el-form-item>
+      <el-form-item v-auth="'demo:multipleFiles:import'">
+        <DataImport
+            ref="dataImportRef"
+            import-url="/demo/multipleFiles/import"
+            :accept="['xlsx', 'xls']"
+            :max-size="2"
+            :max-records="10000"
+            business-name="多文件上传样例"
+            business-type="multipleFiles"
+            templateUrl="/demo/multipleFiles/exportTemplate"
+            duplicate-fields-api="/demo/multipleFiles/uniqueFields"
+            @success="handleImportSuccess"
+            @error="handleImportError"/>
+      </el-form-item>
+      <el-form-item>
+        <el-button v-auth="'demo:multipleFiles:export'" :loading="state.exportLoading" type="success" @click="exportHandle()">导出</el-button>
+      </el-form-item>
 		</el-form>
 
 		<!-- 数据表格 -->
@@ -51,6 +68,7 @@ import {useCrud} from '@/hooks' // 封装的CRUD钩子
 import {reactive, ref} from 'vue'
 import {IHooksOptions} from '@/hooks/interface' // 类型定义
 import AddOrUpdate from "./add-or-update.vue";
+import DataImport from "@/components/upload/dataImport.vue";
 
 /**
  * 状态管理
@@ -59,6 +77,7 @@ import AddOrUpdate from "./add-or-update.vue";
 const state: IHooksOptions = reactive({
 	dataListUrl: '/demo/multipleFiles/page',  // 数据列表接口
 	deleteUrl: '/demo/multipleFiles',         // 删除接口
+  exportUrl: "/demo/multipleFiles/export",
 	queryForm: {  // 查询表单数据
 	}
 })
@@ -74,12 +93,23 @@ const addOrUpdateHandle = (id?: number) => {
 	addOrUpdateRef.value.init(id)
 }
 
+// 不接收参数
+const handleImportSuccess = () => {
+  getDataList()
+}
+
+const handleImportError = () => {
+  getDataList()
+  //ElMessage.error('导入失败')
+}
+
 // 从useCrud钩子中解构出CRUD操作方法
 const {
 	getDataList,              // 获取数据列表
 	selectionChangeHandle,    // 多选变化处理
 	sizeChangeHandle,         // 分页大小变化处理
 	currentChangeHandle,      // 当前页码变化处理
+  exportHandle,
 	deleteBatchHandle         // 批量删除处理
 } = useCrud(state)
 </script>

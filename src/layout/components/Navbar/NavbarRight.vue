@@ -1,16 +1,10 @@
 <template>
 	<div class="navbar-right">
+    <a href="https://github.com/malinge" target="_blank">
+      <svg-icon icon="icon-github-fill"></svg-icon>
+    </a>
 		<Lang />
 		<ComponentSize />
-		<!--<a href="https://gitee.com" target="_blank">
-			<svg-icon icon="icon-earth"></svg-icon>
-		</a>
-		<a href="https://gitee.com/ailge/polymer-ui" target="_blank">
-			<svg-icon icon="icon-github-fill"></svg-icon>
-		</a>
-		<a href="https://gitee.com/ailge/polymer-ui" target="_blank">
-			<svg-icon icon="icon-gitee-fill-round"></svg-icon>
-		</a>-->
 		<Search />
 		<Fullscreen />
 		<Notice/>
@@ -27,6 +21,7 @@ import Fullscreen from './components/Fullscreen.vue'
 import User from './components/User.vue'
 import ThemeSettings from './components/ThemeSettings.vue'
 import Notice from '@/components/notice/index.vue'
+import SvgIcon from "@/components/svg-icon/src/svg-icon.vue";
 </script>
 
 <style lang="scss" scoped>

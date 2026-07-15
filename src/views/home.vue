@@ -26,24 +26,18 @@
           </div>
 
           <div class="hero-actions">
-            <div class="version-info">
-              <span class="version-label">当前版本</span>
-              <span class="version-number">v{{ version }}</span>
-            </div>
+            <el-button size="large" round plain>
+              当前版本v{{ version }}
+            </el-button>
             <el-button
                 type="primary"
                 size="large"
                 round
-                @click="goTarget('https://github.com/malinge/polymer.git')"
-            >
-              <el-icon><Star /></el-icon>
+                @click="goTarget('https://github.com/malinge')">
+              <svg-icon size="20px" icon="icon-github-fill"></svg-icon>
               访问 GitHub
             </el-button>
-            <el-button
-                size="large"
-                round
-                plain
-                @click="goTarget('#')">
+            <el-button size="large" round plain @click="goTarget('#')">
               <el-icon><Document /></el-icon>
               查看文档
             </el-button>
@@ -153,10 +147,12 @@ import {
   Grid, Clock, DataAnalysis, SuccessFilled
 } from '@element-plus/icons-vue'
 import appPackage from "../../package.json";
+import SvgIcon from "@/components/svg-icon/src/svg-icon.vue";
 
 export default {
   name: 'Home',
   components: {
+    SvgIcon,
     Star,
     Document,
     Monitor,
@@ -408,26 +404,6 @@ $card-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.08);
         align-items: center;
         flex-wrap: wrap;
         gap: 14px;
-
-        .version-info {
-          display: flex;
-          align-items: baseline;
-          gap: 4px;
-          background: #f0f2f5;
-          padding: 3px 14px 3px 12px;
-          border-radius: 18px;
-          flex-shrink: 0;
-
-          .version-label {
-            font-size: 12px;
-            color: $text-muted;
-          }
-          .version-number {
-            font-size: 15px;
-            font-weight: 700;
-            color: $primary-dark;
-          }
-        }
 
         .el-button {
           font-weight: 500;
@@ -723,9 +699,6 @@ $card-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.08);
           .el-button {
             width: 100%;
             justify-content: center;
-          }
-          .version-info {
-            align-self: flex-start;
           }
         }
       }

@@ -65,7 +65,7 @@
 
 <script setup lang="ts" name="SystemCityIndex">
 import { useCrud } from '@/hooks'
-import {onMounted, reactive, ref, defineProps, watch, computed } from 'vue'
+import {onMounted, reactive, ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import AddOrUpdate from './add-or-update.vue'
 import { IHooksOptions } from '@/hooks/interface'

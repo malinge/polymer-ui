@@ -93,7 +93,7 @@
 import { useCrud } from "@/hooks";
 import { reactive, ref } from "vue";
 import { IHooksOptions } from "@/hooks/interface";
-import FastUser from "@/components/fast-user/src/fast-user.vue";
+import FastUser from "@/components/fast-user/index.vue";
 import { useRoleUserSubmitApi } from "@/api/sys/role";
 import { ElMessage } from "element-plus/es";
 

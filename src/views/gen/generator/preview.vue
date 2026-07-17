@@ -13,7 +13,7 @@
 import { reactive, ref } from 'vue'
 import { ElLoading } from 'element-plus'
 import { usePreviewApi } from '@/api/gen/generator'
-import CodeMirror from '@/components/code-mirror/src/code-mirror.vue'
+import CodeMirror from '@/components/code-mirror/index.vue'
 
 const preview = reactive({
 	visible: false,

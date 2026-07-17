@@ -16,7 +16,7 @@
 	</div>
 </template>
 
-<script setup lang="ts" name="CodeMirror">
+<script setup lang="ts">
 import { ref, shallowRef, watch } from 'vue'
 import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'

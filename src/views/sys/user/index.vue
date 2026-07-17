@@ -3,6 +3,16 @@
     <el-col :span="5">
       <el-card>
         <DeptTree @node-click="handleDeptClick"/>
+<!--        <tree-panel title="组织机构"
+                    :tree-data="deptOptions"
+                    search-placeholder="请输入部门名称"
+                    storage-key="dept-sidebar-width"
+                    :defaultExpandAll="true"
+                    @node-click="handleDeptClick"
+                    @refresh="getDeptTree"
+                    ref="deptTreeRef"
+                    :tree-props="{ label: 'name', children: 'children' }"
+        />-->
       </el-card>
     </el-col>
     <el-col :span="19">
@@ -82,11 +92,14 @@
 
 <script setup lang="ts" name="SysUserIndex">
 import {useCrud} from "@/hooks";
-import {reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import AddOrUpdate from "./add-or-update.vue";
 import {IHooksOptions} from "@/hooks/interface";
-import DeptTree from "./dept-tree.vue";
+import { useDeptListApi } from '@/api/sys/dept'
 import DataImport from "@/components/upload/dataImport.vue"
+import TreePanel from "@/components/tree-panel/index.vue"
+import type { TreeSelect} from '@/types/api/common'
+import DeptTree from "@/views/sys/user/dept-tree.vue";
 
 const state: IHooksOptions = reactive({
   dataListUrl: "/sys/user/page",
@@ -102,9 +115,11 @@ const state: IHooksOptions = reactive({
   },
 });
 
-const tableRef = ref();
+const tableRef = ref()
 const dataImportRef = ref()
-const addOrUpdateRef = ref();
+const addOrUpdateRef = ref()
+const deptOptions = ref<TreeSelect[] | undefined>(undefined)
+const enabledDeptOptions = ref<TreeSelect[] | undefined>(undefined)
 
 const addOrUpdateHandle = (id?: number) => {
   addOrUpdateRef.value.init(id);
@@ -115,6 +130,24 @@ const handleDeptClick = (deptId: number) => {
   getDataList();
 };
 
+// 部门列表
+const getDeptTree = async () => {
+  const res = await useDeptListApi()
+  deptOptions.value = res.data
+  enabledDeptOptions.value = filterDisabledDept(JSON.parse(JSON.stringify(res.data)))
+}
+
+/** 过滤禁用的部门 */
+const filterDisabledDept=(deptList: TreeSelect[]) => {
+  return deptList.filter(dept => {
+    if (dept.children && dept.children.length) {
+      dept.children = filterDisabledDept(dept.children)
+    }
+    return true
+  })
+}
+
+
 // 不接收参数
 const handleImportSuccess = () => {
   getDataList()
@@ -124,6 +157,10 @@ const handleImportError = () => {
   getDataList()
   //ElMessage.error('导入失败')
 }
+
+onMounted(async () => {
+  await getDeptTree()
+})
 
 
 const {

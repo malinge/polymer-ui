@@ -36,7 +36,6 @@ import { formatDate } from '@/utils/formatTime'
 import * as NotifyMessageApi from '@/api/message/notifyMessage'
 import { useRouter } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
-import { RefSymbol } from '@vue/reactivity';
 import { View } from '@element-plus/icons-vue'
 import { wsClient, MessageTypes, initWebSocket } from '@/utils/websocket';
 import cache from '@/utils/cache'

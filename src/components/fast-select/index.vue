@@ -14,7 +14,7 @@
   </el-select>
 </template>
 
-<script setup lang="ts" name="FastSelect">
+<script setup lang="ts">
 import { computed } from 'vue'
 import { getDictDataList } from '@/utils/tool'
 import { useAppStore } from '@/store/modules/app'

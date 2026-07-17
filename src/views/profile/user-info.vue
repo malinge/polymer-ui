@@ -39,7 +39,7 @@ import { validatePassword } from '@/utils/validate'
 import { useUserInfoSubmitApi } from '@/api/sys/user'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/store/modules/user'
-import FastRadioGroup from "@/components/fast-radio-group/src/fast-radio-group.vue";
+import FastRadioGroup from "@/components/fast-radio-group/index.vue";
 import {useCityListApi} from "@/api/sys/city";
 import UploadComponent from "@/components/upload/index.vue";
 import type {AttachmentUploadResult} from "@/hooks/useFileUpload";

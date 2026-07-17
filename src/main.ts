@@ -6,7 +6,6 @@ import { directive } from './utils/directive'
 import { router } from './router'
 import { i18n } from './i18n'
 import 'virtual:svg-icons-register'
-
 import '@/icons/iconfont/iconfont'
 import 'element-plus/dist/index.css'
 import '@/styles/index.scss'
@@ -14,37 +13,31 @@ import '@/styles/index.scss'
 import 'xe-utils'
 import VXETable from 'vxe-table'
 import 'vxe-table/lib/style.css'
-
-import FastTableColumn from '@/components/fast-table-column'
-import FastRadioGroup from '@/components/fast-radio-group'
-import FastSelect from '@/components/fast-select'
-import FastUser from '@/components/fast-user'
-import CodeMirror from '@/components/code-mirror'
-import SvgIcon from '@/components/svg-icon'
 import VueDOMPurifyHTML from 'vue-dompurify-html' // 解决v-html 的安全隐患
 
-VXETable.setup({
-	zIndex: 3000,
-	select: {
-		transfer: true
-	}
-})
+import SvgIcon from '@/components/svg-icon/index.vue'
+import FastTableColumn from '@/components/fast-table-column/index.vue'
+import FastRadioGroup from '@/components/fast-radio-group/index.vue'
+import FastSelect from '@/components/fast-select/index.vue'
+import FastUser from '@/components/fast-user/index.vue'
+import CodeMirror from '@/components/code-mirror/index.vue'
 
 const app = createApp(App)
+
+// 全局组件挂载
+app.component("fast-table-column", FastTableColumn)
+app.component("fast-radio-group", FastRadioGroup)
+app.component("fast-select", FastSelect)
+app.component("fast-user", FastUser)
+app.component("code-mirror", CodeMirror)
+app.component("svg-icon", SvgIcon)
+
 app.use(createPinia())
-
-
-// 注册 自定义指令
-directive(app)
 app.use(router)
 app.use(i18n)
-app.use(FastTableColumn)
-app.use(FastRadioGroup)
+
+directive(app)
 app.use(VueDOMPurifyHTML)
-app.use(FastSelect)
-app.use(FastUser)
-app.use(CodeMirror)
-app.use(SvgIcon)
 app.use(ElementPlus)
 app.use(VXETable)
 app.mount('#app')

@@ -4,7 +4,7 @@
 	</el-radio-group>
 </template>
 
-<script setup lang="ts" name="FastRadioGroup">
+<script setup lang="ts">
 import { useAppStore } from '@/store/modules/app'
 import { getDictDataList } from '@/utils/tool'
 

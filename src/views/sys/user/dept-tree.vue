@@ -1,6 +1,10 @@
 <template>
 	<div class="dept-container">
-		<el-input v-model="deptName" clearable placeholder="请输入关键字过滤" />
+		<el-input v-model="deptName" clearable placeholder="请输入关键字过滤" >
+      <template #prefix>
+        <el-icon><Search /></el-icon>
+      </template>
+    </el-input>
 		<el-tree
 			ref="treeRef"
 			:data="deptList"
@@ -10,7 +14,19 @@
 			highlight-current
 			node-key="id"
 			@node-click="handleNodeClick"
-		/>
+		>
+      <template #default="{ node, data }">
+        <slot name="node" :node="node" :data="data">
+            <span class="tree-node">
+              <el-icon class="node-icon">
+                <Folder v-if="data.children && data.children.length" />
+                <Document v-else />
+              </el-icon>
+              <span class="node-label" :title="node.label">{{ node.label }}</span>
+            </span>
+        </slot>
+      </template>
+    </el-tree>
 	</div>
 </template>
 
@@ -18,6 +34,7 @@
 import { ElTree } from 'element-plus'
 import { useDeptListApi } from '@/api/sys/dept'
 import { onMounted, ref, watch } from 'vue'
+import {Search, Folder, Document} from '@element-plus/icons-vue'
 
 const deptList = ref()
 const deptName = ref()
@@ -60,5 +77,25 @@ const handleNodeClick = (row: any) => {
 	:deep(.el-tree) {
 		margin-top: 20px;
 	}
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  overflow: hidden;
+
+  .node-icon {
+    font-size: 14px;
+    color: #4fb5d0;
+    flex-shrink: 0;
+  }
+
+  .node-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 </style>

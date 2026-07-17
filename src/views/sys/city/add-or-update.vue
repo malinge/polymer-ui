@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, defineProps } from 'vue'
+import { reactive, ref} from 'vue'
 import { ElMessage } from 'element-plus/es'
 import { useCityApi, useCitySubmitApi } from '@/api/sys/city'
 

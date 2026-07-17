@@ -14,7 +14,7 @@
 	</el-table-column>
 </template>
 
-<script setup lang="ts" name="FastTableColumn">
+<script setup lang="ts">
 	import { getDictLabelList } from '@/utils/tool'
 
 	const props = defineProps({

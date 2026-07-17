@@ -1,10 +1,6 @@
-import type { App, Plugin, Component, DefineComponent } from 'vue'
 import constant from '@/utils/constant'
 import { useAppStore } from '@/store/modules/app'
 import { AES, lib, enc, mode, pad } from 'crypto-js'
-
-// 定义一个通用的组件类型
-type ComponentType = Component | DefineComponent<{}, {}, any>
 
 // 把路径转换成驼峰命名
 export const pathToCamel = (path: string): string => {
@@ -145,43 +141,4 @@ export const encrypt = (plaintext: string): string => {
 	})
 
 	return encrypted.toString()
-}
-
-
-// 全局组件安装
-export const withInstall = <T extends ComponentType>(
-	component: T,
-	alias?: string
-): T & Plugin => {
-	const comp = component as any
-
-	// 创建 install 函数
-	const install = (app: App) => {
-		// 尝试从不同来源获取组件名称
-		const name = comp.name ||
-			comp.displayName ||
-			comp.__name ||
-			comp.constructor?.name ||
-			comp.__proto__?.constructor?.name
-
-		if (!name || typeof name !== 'string') {
-			console.warn('组件缺少有效的 name 属性，无法全局注册', component)
-			return
-		}
-
-		// 注册组件
-		app.component(name, component as Component)
-
-		// 如果需要，添加到全局属性
-		if (alias && typeof alias === 'string') {
-			app.config.globalProperties[alias] = component
-		}
-	}
-
-	// 添加 install 方法到组件
-	if (!comp.install) {
-		comp.install = install
-	}
-
-	return comp as T & Plugin
 }

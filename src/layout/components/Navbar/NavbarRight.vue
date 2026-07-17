@@ -21,7 +21,7 @@ import Fullscreen from './components/Fullscreen.vue'
 import User from './components/User.vue'
 import ThemeSettings from './components/ThemeSettings.vue'
 import Notice from '@/components/notice/index.vue'
-import SvgIcon from "@/components/svg-icon/src/svg-icon.vue";
+import SvgIcon from "@/components/svg-icon/index.vue";
 </script>
 
 <style lang="scss" scoped>

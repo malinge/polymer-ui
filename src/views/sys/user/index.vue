@@ -1,22 +1,16 @@
 <template>
-  <el-row :gutter="6">
-    <el-col :span="5">
-      <el-card>
-        <DeptTree @node-click="handleDeptClick"/>
-<!--        <tree-panel title="组织机构"
-                    :tree-data="deptOptions"
-                    search-placeholder="请输入部门名称"
-                    storage-key="dept-sidebar-width"
-                    :defaultExpandAll="true"
-                    @node-click="handleDeptClick"
-                    @refresh="getDeptTree"
-                    ref="deptTreeRef"
-                    :tree-props="{ label: 'name', children: 'children' }"
-        />-->
-      </el-card>
-    </el-col>
-    <el-col :span="19">
-      <el-card>
+  <div class="app-container tree-sidebar-manage-wrap">
+    <tree-panel title="组织机构"
+                :tree-data="deptOptions"
+                search-placeholder="请输入部门名称"
+                storage-key="dept-sidebar-width"
+                :defaultExpandAll="true"
+                @node-click="handleDeptClick"
+                @refresh="getDeptTree"
+                ref="deptTreeRef"
+                :tree-props="{ label: 'name', children: 'children' }"/>
+    <div class="tree-sidebar-content">
+      <div class="content-inner">
         <el-form :inline="true" :model="state.queryForm" @keyup.enter="getDataList()">
           <el-form-item>
             <el-input v-model="state.queryForm.username" placeholder="用户名" clearable/>
@@ -51,6 +45,7 @@
             <el-button v-auth="'sys:user:export'" :loading="state.exportLoading" type="success" @click="exportHandle()">导出</el-button>
           </el-form-item>
         </el-form>
+
         <el-table
             v-loading="state.dataListLoading"
             show-overflow-tooltip
@@ -84,10 +79,10 @@
             @size-change="sizeChangeHandle"
             @current-change="currentChangeHandle">
         </el-pagination>
-      </el-card>
-    </el-col>
-  </el-row>
-  <add-or-update ref="addOrUpdateRef" @refresh-data-list="getDataList"></add-or-update>
+      </div>
+    </div>
+    <add-or-update ref="addOrUpdateRef" @refresh-data-list="getDataList"></add-or-update>
+  </div>
 </template>
 
 <script setup lang="ts" name="SysUserIndex">
@@ -99,7 +94,6 @@ import { useDeptListApi } from '@/api/sys/dept'
 import DataImport from "@/components/upload/dataImport.vue"
 import TreePanel from "@/components/tree-panel/index.vue"
 import type { TreeSelect} from '@/types/api/common'
-import DeptTree from "@/views/sys/user/dept-tree.vue";
 
 const state: IHooksOptions = reactive({
   dataListUrl: "/sys/user/page",
@@ -125,8 +119,8 @@ const addOrUpdateHandle = (id?: number) => {
   addOrUpdateRef.value.init(id);
 };
 
-const handleDeptClick = (deptId: number) => {
-  state.queryForm.deptId = deptId;
+const handleDeptClick = (data: any) => {
+  state.queryForm.deptId = data.id;
   getDataList();
 };
 
@@ -172,4 +166,31 @@ const {
   selectHandle,
   selectAllHandle,
 } = useCrud(state, tableRef);
+
 </script>
+<style lang="scss" scoped>
+.app-container {
+  padding: 20px;
+}
+/* tree-sidebar content */
+.tree-sidebar-manage-wrap {
+  display: flex;
+  gap: 0;
+  min-height: calc(100vh - 130px);
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.tree-sidebar-content {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background: #fff;
+
+  .content-inner {
+    padding: 12px 16px;
+    height: 100%;
+    overflow-y: auto;
+  }
+}
+</style>

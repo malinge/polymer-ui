@@ -82,7 +82,7 @@ import {
   Folder,
   Search,
   OfficeBuilding,
-  Grid
+  Refresh
 } from "@element-plus/icons-vue";
 
 const props = defineProps({
@@ -740,11 +740,11 @@ onBeforeUnmount(() => {
 
   :deep(.el-tree-node.is-current > .el-tree-node__content) {
     background: #e6f0fd;
-    color: #409eff;
+    color: #4fb5d0;
     font-weight: 600;
 
     .node-icon {
-      color: #409eff !important;
+      color: #4fb5d0 !important;
     }
   }
 }
@@ -758,7 +758,7 @@ onBeforeUnmount(() => {
 
   .node-icon {
     font-size: 14px;
-    color: #f5a623;
+    color: #4fb5d0;
     flex-shrink: 0;
   }
 

@@ -6,8 +6,7 @@
 			:align="align"
 			:width="width"
 			:min-width="minWidth"
-			:class-name="className"
-	>
+			:class-name="className">
 		<template #default="scope">
 			<span v-html="getDictLabelList(props.dictType, scope.row[props.prop])"></span>
 		</template>

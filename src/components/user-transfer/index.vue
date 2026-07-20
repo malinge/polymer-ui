@@ -4,34 +4,19 @@
         v-model="dialogVisible"
         :title="title"
         width="940px"
-        :close-on-click-modal="false"
-    >
+        :close-on-click-modal="false">
       <div class="user-transfer-dialog">
         <!-- 左侧组织部门树 -->
         <div class="tree-container">
-          <div class="dept-title">组织部门</div>
-          <!-- 部门搜索框 -->
-          <el-input
-              class="my-el-input"
-              :prefix-icon="Search"
-              v-model="deptName"
-              clearable
-              placeholder="请输入搜索内容"
-              @input="handleSearchInput"
-          />
-          <div class="tree-scroll-container">
-            <!-- 部门树组件 -->
-            <el-tree
-                ref="deptTreeRef"
-                :data="deptTree"
-                node-key="id"
-                :props="{ label: 'name', children: 'children' }"
-                :highlight-current="true"
-                :expand-on-click-node="false"
-                @node-click="handleNodeClick"
-                :filter-node-method="filterNode"
-            />
-          </div>
+          <tree-panel title="组织机构"
+                      :tree-data="deptOptions"
+                      search-placeholder="请输入部门名称"
+                      storage-key="dept-sidebar-width"
+                      :defaultExpandAll="true"
+                      @node-click="handleDeptClick"
+                      @refresh="getDeptTree"
+                      :maxWidth="222"
+                      ref="deptTreeRef" style="height: 100%; flex: 1;"/>
         </div>
 
         <!-- 右侧人员穿梭框 -->
@@ -60,21 +45,15 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, PropType } from 'vue'
 import { ElTree, ElMessage } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
 import { useDeptListApi } from '@/api/sys/dept'
 import { useListByDeptIdApi } from '@/api/sys/user'
+import TreePanel from "@/components/tree-panel/index.vue";
+import type {TreeSelect} from "@/types/api/common";
 
 // 用户接口定义
 interface User {
   id: number
   username: string
-}
-
-// 组织部门接口定义
-interface Dept {
-  id: number
-  name: string
-  children?: Dept[]
 }
 
 // 组件属性定义
@@ -101,24 +80,16 @@ const emit = defineEmits(['confirm'])
 
 // ============== 状态变量定义 ==============
 const dialogVisible = ref(false)          // 对话框显示状态
-const deptTree = ref<Dept[]>([])            // 组织部门树数据
+const deptOptions = ref<TreeSelect[] | undefined>(undefined) // 组织部门树数据
 const deptTreeRef = ref<InstanceType<typeof ElTree>>() // 树组件引用
 const currentDeptId = ref<number>(0)       // 当前选中的部门ID
 const leftUsers = ref<User[]>([])         // 左侧待选人员列表
 const selectedUserIds = ref<number[]>([]) // 已选择的用户ID列表
-const deptName = ref('')                   // 部门搜索关键字
 
 // ============== 初始化逻辑 ==============
 onMounted(async () => {
   // 组件挂载时加载部门树
-  await loadDeptTree()
-
-  // 默认选中第一个节点
-  if (deptTree.value.length > 0) {
-    const firstNode = deptTree.value[0]
-    deptTreeRef.value?.setCurrentKey(firstNode.id)
-    handleNodeClick(firstNode)
-  }
+  await getDeptTree()
 })
 
 // ============== 方法定义 ==============
@@ -145,26 +116,15 @@ const open = (defaultValue?: number | number[]) => {
           : (typeof initValue === 'number' ? [initValue] : [])
     }
   }
-
-  // 如果部门树未加载，则加载部门树
-  if (deptTree.value.length === 0) {
-    loadDeptTree().then(() => {
-      if (deptTree.value.length > 0) {
-        const firstNode = deptTree.value[0]
-        deptTreeRef.value?.setCurrentKey(firstNode.id)
-        handleNodeClick(firstNode)
-      }
-    })
-  }
 }
 
 /**
  * 加载组织部门树
  */
-const loadDeptTree = async () => {
+const getDeptTree = async () => {
   try {
     const res = await useDeptListApi()
-    deptTree.value = res.data || []
+    deptOptions.value = res.data || []
   } catch (error) {
     console.error('加载组织部门树失败:', error)
     ElMessage.error('加载组织部门失败')
@@ -187,17 +147,6 @@ const loadUsersByDept = async (deptId: number) => {
 }
 
 /**
- * 树节点过滤方法
- * @param name - 过滤条件
- * @param data - 节点数据
- * @returns 是否符合条件
- */
-const filterNode = (name: string, data: any) => {
-  if (!name) return true
-  return data.name.includes(name)
-}
-
-/**
  * 安全字符串转换（用于搜索）
  * @param str - 输入字符串
  * @returns 小写字符串或空字符串
@@ -209,17 +158,10 @@ const safeToLower = (str: string | null | undefined): string => {
 // ============== 事件处理函数 ==============
 
 /**
- * 部门搜索输入处理
- */
-const handleSearchInput = () => {
-  deptTreeRef.value!.filter(deptName.value)
-}
-
-/**
  * 树节点点击事件
  * @param node - 点击的节点数据
  */
-const handleNodeClick = (node: Dept) => {
+const handleDeptClick = (node: any) => {
   currentDeptId.value = node.id
   loadUsersByDept(node.id)
 }
@@ -304,7 +246,6 @@ defineExpose({ open })
 /* 左侧树容器 */
 .tree-container {
   padding: 0;
-  width: 200px;
   height: 417px;
   min-height: 300px;
   overflow: hidden;
@@ -312,34 +253,6 @@ defineExpose({ open })
   margin-right: 10px;
   display: flex;
   flex-direction: column;
-}
-
-/* 部门标题样式 */
-.dept-title {
-  background-color: #f5f7fa;
-  padding: 9.3px 15px;
-  margin: 0;
-  width: 100%;
-  box-sizing: border-box;
-  color: var(--el-text-color-primary);
-  font-size: 16px;
-  font-weight: normal;
-  flex-shrink: 0;
-}
-
-/* 搜索框样式 */
-.my-el-input {
-  height: 34px;
-  margin: 15px 1px 10px 8px;
-  width: calc(100% - 16px);
-  flex-shrink: 0;
-}
-
-/* 树滚动容器 */
-.tree-scroll-container {
-  flex: 1;
-  overflow: auto;
-  min-width: 100%;
 }
 
 /* 树样式调整 */
@@ -377,6 +290,6 @@ defineExpose({ open })
 }
 
 :deep(.el-transfer-panel) {
-  width: 259px;
+  width: 255px;
 }
 </style>

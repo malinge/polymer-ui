@@ -7,8 +7,7 @@
                 :defaultExpandAll="true"
                 @node-click="handleDeptClick"
                 @refresh="getDeptTree"
-                ref="deptTreeRef"
-                :tree-props="{ label: 'name', children: 'children' }"/>
+                ref="deptTreeRef" />
     <div class="tree-sidebar-content">
       <div class="content-inner">
         <el-form :inline="true" :model="state.queryForm" @keyup.enter="getDataList()">
@@ -113,7 +112,6 @@ const tableRef = ref()
 const dataImportRef = ref()
 const addOrUpdateRef = ref()
 const deptOptions = ref<TreeSelect[] | undefined>(undefined)
-const enabledDeptOptions = ref<TreeSelect[] | undefined>(undefined)
 
 const addOrUpdateHandle = (id?: number) => {
   addOrUpdateRef.value.init(id);
@@ -128,19 +126,7 @@ const handleDeptClick = (data: any) => {
 const getDeptTree = async () => {
   const res = await useDeptListApi()
   deptOptions.value = res.data
-  enabledDeptOptions.value = filterDisabledDept(JSON.parse(JSON.stringify(res.data)))
 }
-
-/** 过滤禁用的部门 */
-const filterDisabledDept=(deptList: TreeSelect[]) => {
-  return deptList.filter(dept => {
-    if (dept.children && dept.children.length) {
-      dept.children = filterDisabledDept(dept.children)
-    }
-    return true
-  })
-}
-
 
 // 不接收参数
 const handleImportSuccess = () => {

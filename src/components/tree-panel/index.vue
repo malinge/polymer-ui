@@ -121,7 +121,7 @@ const props = defineProps({
     type: Object,
     default: () => ({
       children: "children",
-      label: "label"
+      label: "name"
     })
   },
   // 节点唯一标识字段
@@ -226,11 +226,26 @@ const isExpandedAll = computed<boolean>({
 
 // 节点过滤方法
 const filterNodeMethod = (value: string, data: any): boolean => {
+  // 如果使用了自定义过滤方法
   if (props.filterMethod) {
     return props.filterMethod(value, data)
   }
-  if (!value) return true
-  return data.label && data.label.indexOf(value) !== -1
+
+  // 如果没有搜索关键词，显示所有节点
+  if (!value || value.trim() === '') {
+    return true
+  }
+
+  // 获取 label 字段名
+  const labelField = props.treeProps?.label || 'name'
+  const labelValue = data[labelField]
+
+  // 检查 label 是否包含搜索关键词（不区分大小写）
+  if (labelValue) {
+    return labelValue.toLowerCase().indexOf(value.toLowerCase()) !== -1
+  }
+
+  return false
 }
 
 // 监听折叠状态

@@ -122,7 +122,7 @@ import { IHooksOptions } from "@/hooks/interface";
 import { ElMessage } from "element-plus";
 import type { UploadProps } from "element-plus";
 import { useAttachmentSubmitApi } from "@/api/sys/attachment";
-import {type AttachmentUploadResult} from "@/hooks/useFileUpload";
+import type {AttachmentUploadResult} from "@/types/api/common"
 import Upload from "@/components/upload/index.vue";
 
 const tableRef = ref();

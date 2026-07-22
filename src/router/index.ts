@@ -29,6 +29,10 @@ const constantRoutes: RouteRecordRaw[] = [
 		component: () => import('../views/login/index.vue')
 	},
 	{
+		path: '/lock',
+		component: () => import('../views/lock.vue')
+	},
+	{
 		path: '/404',
 		component: () => import('../views/404.vue')
 	}

@@ -191,20 +191,15 @@ import { useCrud } from "@/hooks";
 import {ref, computed, reactive} from 'vue'
 import { ElMessage, UploadRequestOptions } from 'element-plus'
 import { Loading, CircleCheckFilled } from '@element-plus/icons-vue'
-import { useFileUpload, type DataImportResult } from '@/hooks/useFileUpload'
+import { useFileUpload } from '@/hooks/useFileUpload'
+import type {DataImportResult} from "@/types/api/common"
 import request from '@/utils/request'
 import {IHooksOptions} from "@/hooks/interface";
 import { useImportExportRecordListApi } from '@/api/sys/importExportRecord'
+import type {ApiResponse} from "@/types/api/common"
 
 // ==================== 类型定义 ====================
 
-/** 标准 API 响应接口 */
-interface ApiResponse<T = any> {
-  code: number
-  data: T
-  msg?: string
-  message?: string
-}
 
 /** 处理方式选项 */
 interface StrategyOption {

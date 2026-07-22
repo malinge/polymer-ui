@@ -42,7 +42,7 @@ import { useUserStore } from '@/store/modules/user'
 import FastRadioGroup from "@/components/fast-radio-group/index.vue";
 import {useCityListApi} from "@/api/sys/city";
 import UploadComponent from "@/components/upload/index.vue";
-import type {AttachmentUploadResult} from "@/hooks/useFileUpload";
+import type {AttachmentUploadResult} from "@/types/api/common"
 
 const userStore = useUserStore()
 const uploadRef = ref<InstanceType<typeof UploadComponent>>();

@@ -2,36 +2,14 @@ import * as FileApi from '@/api/storage'
 import { UploadRequestOptions } from 'element-plus/es/components/upload/src/upload'
 import axios from 'axios'
 import request from '@/utils/request'
+import type {ApiResponse, AttachmentUploadResult, DataImportResult} from "@/types/api/common"
 
 /**
- * API响应接口
+ * 数据文件导入参数接口
  */
-interface ApiResponse<T = any> {
-    code: number
-    data: T
-    msg?: string
-}
-
-/**
- * 附件上传结果接口
- */
-interface AttachmentUploadResult {
-    name: string
-    url: string
-    size: number
-    platform: string
-}
-
-/**
- * 数据导入结果接口（由各业务模块定义，此处为示例）
- */
-interface DataImportResult<T = any> {
-    /** 是否通过校验 */
-    passed?: boolean
-    /** 错误文件相对路径 */
-    errorFileUrl?: string
-    /** 信息 */
-    message?: string
+interface DataImportParams<T = any> {
+    importUrl: string                                              // 导入接口地址
+    data?: Record<string, any>                                    // 额外的业务参数
 }
 
 /**
@@ -42,14 +20,6 @@ enum UPLOAD_TYPE {
     CLIENT = 'client',
     // 客户端发送到后端上传
     SERVER = 'server'
-}
-
-/**
- * 数据文件导入参数接口
- */
-interface DataImportParams<T = any> {
-    importUrl: string                                              // 导入接口地址
-    data?: Record<string, any>                                    // 额外的业务参数
 }
 
 /**
@@ -187,6 +157,3 @@ export const useFileUpload = () => {
         uploadDataImport          // 数据文件导入
     }
 }
-
-// 导出类型供外部使用
-export type { AttachmentUploadResult, DataImportResult, DataImportParams, ApiResponse }

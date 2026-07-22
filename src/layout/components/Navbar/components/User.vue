@@ -10,7 +10,11 @@
 				<router-link to="/profile">
 					<el-dropdown-item> {{ $t('router.profile') }} </el-dropdown-item>
 				</router-link>
-				<el-dropdown-item divided @click="logout"> {{ $t('app.signOut') }} </el-dropdown-item>
+        <el-dropdown-item @click="lockScreen">
+          <span>锁定屏幕</span>
+        </el-dropdown-item>
+				<el-dropdown-item divided @click="logout"> {{ $t('app.signOut') }}
+        </el-dropdown-item>
 			</el-dropdown-menu>
 		</template>
 	</el-dropdown>
@@ -21,9 +25,13 @@
 	import { ArrowDown } from '@element-plus/icons-vue'
   import {onMounted, ref, watch} from "vue";
   import FileUrlUtils from "@/utils/fileUrlUtils";
+  import {useRoute, useRouter} from "vue-router";
+  import useLockStore from "@/store/modules/lock";
 
 	const userStore = useUserStore()
-
+  const route = useRoute()
+  const router = useRouter()
+  const lockStore = useLockStore()
   const previewUrl = ref('');
 
   // 获取预览URL
@@ -36,6 +44,12 @@
 
   // 组件挂载时初始化
   onMounted(fetchPreviewUrl);
+
+  function lockScreen() {
+    const currentPath = route.fullPath
+    lockStore.lockScreen(currentPath)
+    router.push({ path: '/lock' })
+  }
 
 	const logout = () => {
 		userStore.logoutAction().then(() => {

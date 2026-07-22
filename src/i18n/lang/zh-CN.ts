@@ -31,7 +31,7 @@ export default {
 		signIn: '账号登录',
 		mobileSignIn: '手机登录',
 		mobile: '手机号',
-		signOut: '退出',
+		signOut: '退出登录',
 		large: '大型',
 		default: '默认',
 		small: '小型',

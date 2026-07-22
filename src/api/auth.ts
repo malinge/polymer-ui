@@ -23,3 +23,8 @@ export const useMobileLoginApi = (data: any) => {
 export const useLogoutApi = () => {
 	return service.post('/sys/auth/logout')
 }
+
+// 解锁屏幕
+export const unlockScreen = (password: string) => {
+	return service.post( '/sys/auth/unlockScreen?password=' + password )
+}

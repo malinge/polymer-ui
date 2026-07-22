@@ -89,14 +89,12 @@ const avatarUrl = ref('') // 存储头像URL
 // 获取头像完整URL
 const getAvatarUrl = async () => {
   if (!userStore.user.avatar) {
-    avatarUrl.value = '/avatar.png'
     return
   }
   try {
     avatarUrl.value = await FileUrlUtils.getFullUrl(userStore.user.avatar)
   } catch (error) {
     console.error('获取头像URL失败:', error)
-    avatarUrl.value = '/avatar.png'
   }
 }
 

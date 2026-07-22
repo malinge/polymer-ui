@@ -53,7 +53,7 @@
   import {useMultipleFilesApi, useMultipleFilesSubmitApi} from "@/api/demo/multipleFiles";
   import UploadComponent from '@/components/upload/index.vue'
   import { Upload } from '@element-plus/icons-vue' // 导入 Upload 图标
-  import type { AttachmentUploadResult } from '@/hooks/useFileUpload'
+  import type {AttachmentUploadResult} from "@/types/api/common"
   import WangEditor from '@/components/wang-editor/index.vue'
 
 

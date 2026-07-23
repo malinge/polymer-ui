@@ -24,7 +24,7 @@ import CodeMirror from '@/components/code-mirror/index.vue'
 
 const app = createApp(App)
 
-// 全局组件挂载
+//全局组件挂载
 app.component("fast-table-column", FastTableColumn)
 app.component("fast-radio-group", FastRadioGroup)
 app.component("fast-select", FastSelect)

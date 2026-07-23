@@ -33,7 +33,7 @@
                 type="primary"
                 size="large"
                 round
-                @click="goTarget('https://github.com/malinge')">
+                @click="goTarget('https://github.com/linxile')">
               <svg-icon size="20px" icon="icon-github-fill"></svg-icon>
               访问 GitHub
             </el-button>

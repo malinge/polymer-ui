@@ -1,6 +1,6 @@
 <template>
 	<div class="navbar-right">
-    <a href="https://github.com/malinge" target="_blank">
+    <a href="https://github.com/linxile" target="_blank">
       <svg-icon icon="icon-github-fill"></svg-icon>
     </a>
 		<Lang />
